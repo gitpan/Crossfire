@@ -1,0 +1,9 @@
+TODO: picker has upper left missing monsters
+TODO: steting komische skeulending leaves out lower left cell
+TODO: > | $ CROSSFIRE_LIBDIR=/opt/crossfire/share/crossfire gce
+      > | GdkPixbuf-WARNING **: Bad option name 'compression' passed to PNG
+      > | saver at /usr/local/share/perl/5.8.4/Crossfire.pm line 708.
+      > | GdkPixbuf-CRITICAL **: gdk_pixbuf_savev: assertion `error == NULL
+      1.081, < 1.04
+
+

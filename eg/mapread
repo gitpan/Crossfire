@@ -1,0 +1,5 @@
+#!/opt/perl/bin/perl
+# CROSSFIRE_LIBDIR=/opt/cf/share/crossfire/ eg/mapread ../cf/maps-bigworld/scorn/kar/drink 
+use Crossfire;
+
+my $m = Crossfire::read_arch ($ARGV[0]);

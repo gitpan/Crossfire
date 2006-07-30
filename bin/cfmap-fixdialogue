@@ -1,0 +1,67 @@
+#!/opt/bin/perl
+
+# this script checks, fixes and simplifies @match expressions in a map
+
+use Crossfire::Map;
+
+sub fix($) {
+   my ($msg) = @_;
+
+   local $_ = $msg;
+
+   # fx pretty common error of having "* First line of response"
+   my $response = s/^\* (.*)/*/ ? "\n$1" : "";
+
+   warn "$path ($_) unexpected characters in match \n" if !/^[a-zA-Z\[\]\|\*\!\' 0-9\-\?]+$/;
+
+   s/\[(.)(.)\]/(lc $1) eq (lc $2) ? lc $1 : "[$1$2]"/ge;
+
+   my %alt;
+
+   for my $kw (split /\|/) {
+      $kw =~ s/^\s+//;
+      $kw =~ s/\s+$//;
+
+      $alt{lc $kw} = $kw;
+   }
+
+   $_ = join "|", sort keys %alt;
+
+   $_ .= $response;
+
+   warn "$path <$msg><$_>\n" if $_ ne $msg;
+   warn "$path ($_) unexpected characters in match\n" if /[\[\]]/;
+
+   $_
+}
+
+for $path (@ARGV) {
+   eval {
+      open my $fh, "<:raw:perlio:utf8", $path
+         or die "$path: $!\n";
+
+      <$fh> =~ /^arch map$/
+         or die "$path: not a crossfire map file\n";
+
+      my $map = new_from_file Crossfire::Map $path
+         or die "$path: file load error\n";
+
+      my $dirty;
+
+      for my $a (map @$_, grep $_, map @$_, grep $_, @{ $map->{map} }) {
+         next unless $a->{msg} =~ /^\@match /;
+
+         my $old = $a->{msg};
+
+         $a->{msg} =~ s/^(\@match\s+)(.*)$/$1 . fix $2/gme;
+
+         $dirty ||= $old ne $a->{msg};
+      }
+
+      $map->write_file ($path)
+         if $dirty;
+
+      1
+   } or $@ =~ /not a crossfire map/ or warn $@;
+}
+

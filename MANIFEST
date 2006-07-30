@@ -1,0 +1,21 @@
+COPYING
+MANIFEST
+Changes
+Makefile.PL
+Crossfire.pm
+Crossfire/Data.pm
+Crossfire/Map.pm
+Crossfire/MapWidget.pm
+Crossfire/Protocol/Constants.pm
+Crossfire/Protocol/Base.pm
+Crossfire/Protocol.pm
+bin/cfmap-normalize
+bin/cfmap-fixdialogue
+res2pm
+res/README
+res/autojoin.txt
+res/spells.xml
+res/typenumbers.xml
+res/types.xml
+eg/mapread
+META.yml                                 Module meta-data (added by MakeMaker)
