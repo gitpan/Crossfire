@@ -27,13 +27,13 @@ use Crossfire::Protocol::Constants;
 
 use JSON::Syck (); #TODO#d# replace by JSON::PC when it becomes available == working
 
-$JSON::Syck::ImplicitUnicode = 1;
-
 sub from_json($) {
+   $JSON::Syck::ImplicitUnicode = 1;
    JSON::Syck::Load $_[0]
 }
 
 sub to_json($) {
+   $JSON::Syck::ImplicitUnicode = 0;
    JSON::Syck::Dump $_[0]
 }
 
@@ -51,6 +51,7 @@ sub new {
       max_outstanding => 2,
       token           => "a0",
       ncom            => [0..255],
+      client          => "Crossfire Perl Module $VERSION $] $^O $0",
       @_
    }, $class;
 
@@ -87,9 +88,10 @@ sub new {
       extcmd            => 1,
       extendedTextInfos => 1,
       spellmon          => 1,
+      %{$self->{setup_req} || {} },
    };
 
-   $self->send ("version 1023 1027 cfplus1 $VERSION $] $^O");
+   $self->send ("version 1023 1027 $self->{client}");
    $self->send_setup;
    $self->send ("requestinfo skill_info");
    $self->send ("requestinfo spell_paths");

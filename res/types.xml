@@ -158,6 +158,14 @@
         every tick.
      </attribute>
   ">
+  <!ENTITY activate_on "
+     <attribute arch='activate_on_push' editor='Activate on push' type='bool'>
+       Whether the teleporter should only be activated on push.
+     </attribute>
+     <attribute arch='activate_on_release' editor='Activate on release' type='bool'>
+       Whether the teleporter should only be activated on release.
+     </attribute>
+  ">
 ]>
 
 <types>
@@ -402,6 +410,7 @@
   <entry value="11" name="close" />
   <entry value="12" name="timer" />
   <entry value="28" name="move" />
+  <entry value="41" name="drop_on" />
 </list>
 
 <list name="attack_movement_bits_0_3">
@@ -1069,6 +1078,30 @@
 </type>
 
 <!--####################################################################-->
+<type number="165" name="Safe ground (CF+)">
+  <ignore>
+    <ignore_list name="non_pickable" />
+  </ignore>
+  <description><![CDATA[
+    Safe ground is a special object that prevents any effects that might
+    be harmful for the map, other players or items on the map.
+    It blocks all magic and prayers, usage of alchemy, prevents potions
+    from being used and blocks bombs from exploding. Note that altars that
+    do cast spells still work.
+    (This is a Crossfire+ feature, and might not work elsewhere)
+  ]]>
+  </description>
+  <use><![CDATA[
+    Safe ground can be used to prevents any means of burning
+    or destroying the items in a shop. Put this object below all floor tiles
+    in your map and your shop will be safe. It's generally useful for making
+    areas where really no kind of spell should be invoked by a player.
+  ]]>
+  </use>
+  <attribute arch="no_pick" value="1" type="fixed" />
+</type>
+
+<!--####################################################################-->
 <type number="8" name="Book">
   <description><![CDATA[
     Applying a book, the containing message is displayed to the player. ]]>
@@ -1439,6 +1472,7 @@
     Whenever the connection value is activated,
     the creator gets triggered.
   </attribute>
+  &activate_on;
   <attribute arch="lifesave" editor="infinit uses" type="bool">
     If &lt;infinit uses&gt; is set, the creator will work
     infinitely, regardless of the value in &lt;number of uses&gt;.
@@ -1751,8 +1785,8 @@
     loosing rate of 2/3 = 67%. ]]>
   </use>
   <attribute arch="other_arch" editor="target arch" type="string">
-    Only objects of matching archtype, lying ontop of the dublicator will be
-    dublicated, multiplied or removed. All other objects will be ignored.
+    Only objects of matching archtype, lying ontop of the duplicator will be
+    duplicated, multiplied or removed. All other objects will be ignored.
   </attribute>
   <attribute arch="level" editor="multiply factor" type="int">
     The number of items in the target pile will be multiplied by the
@@ -1764,6 +1798,7 @@
     is able to trigger this duplicator. Be very careful that players cannot
     abuse it to create endless amounts of money or other valuable stuff!
   </attribute>
+  &activate_on;
 </type>
 
 <!--####################################################################-->
@@ -2108,6 +2143,9 @@
     maps more complex than "one-way". ]]>
   </use>
   <attribute arch="no_pick" value="1" type="fixed" />
+  <attribute arch="speed" value="1" type="float">
+    The speed of the gate affects how fast it is closing/opening.
+  </attribute>
   <attribute arch="connected" editor="connection" type="int">
     Whenever the inventory checker is triggered, all objects with identical
     &lt;connection&gt; value get activated. This only makes sense together with
@@ -2335,7 +2373,7 @@
     high or higher than this value. In that way, some altars can not
     be re-consecrated, while other altars, like those in dungeons, could be.
 
-    Altars located in temples should have at least &lt;reconsecrate level&gt; 100.
+    Altars located in temples should have at least &lt;reconsecrate level&gt; 120.
     Some characters might need those altars, they would be very unhappy to
     see them re-consecrated to another cult.
   </attribute>
@@ -2692,6 +2730,7 @@
     it's spell. You should set &lt;casting speed&gt; to zero, or this won't
     have much visible effect.
   </attribute>
+  &activate_on;
   <attribute arch="speed" editor="casting speed" type="float">
     The &lt;casting speed&gt; defines the spellcasting speed of the wall.
     You can fine-tune how long the duration between two casts shall
@@ -3483,6 +3522,7 @@
     When a &lt;connection&gt; value is set, the pit can be opened/closed
     by activating the connection.
   </attribute>
+  &activate_on;
   <attribute arch="hp" editor="destination X" type="int">
     The pit will transport creatures (and items) randomly into a two-square
     radius of the destination coordinates.
@@ -4008,7 +4048,7 @@
 <!--####################################################################-->
 <type number="14" name="Shooting Weapon">
   <description><![CDATA[
-    Schooting weapons like bows/crossbows are used to shoot projectiles
+    Shooting weapons like bows/crossbows are used to shoot projectiles
     (arrows/bolts). Shooting weapons and normal (melee) weapons can be
     wielded both at the same time. Like with any other equipment,
     stats/bonuses from shooting weapons are directly inherited to the player.
@@ -4020,7 +4060,7 @@
   <use><![CDATA[
     Shooting weapons should not add bonuses in general. There's already
     enough "equipment-slots" doing that: swords, rings, amulets, girdles etc.
-    Schooting weapons should especially not add bonuses to the player
+    Shooting weapons should especially not add bonuses to the player
     that have nothing to do with schooting. A Wisdom bonus on a bow
     is crap for example! A name like "Longbow of great Wisdom" doesn't help
     - still crap. ]]>
@@ -4238,6 +4278,7 @@
     If activating your magic_mouth this way, the message will not only be
     printed to one player, but all players on the current map.
   </attribute>
+  &activate_on;
   &move_on;
   <attribute arch="food" editor="counter" type="int">
     If a counter-value is set (greater zero), the sign/magic_mouth can be applied
@@ -4619,6 +4660,7 @@
     whenever the connection is triggered. To use this properly,
     &lt;activation speed&gt; must be zero.
   </attribute>
+  &activate_on;
   <attribute arch="speed" editor="activation speed" type="float">
     If the &lt;activation speed&gt; is nonzero, the teleporter will
     automatically be activated in regular time-intervals. Hence, the
@@ -4658,6 +4700,7 @@
     &lt;blocking passage&gt; disabled. If unset, the gate opens automatically
     after some time.
   </attribute>
+  &activate_on;
   <attribute arch="wc" editor="position state" type="int">
     The &lt;position state&gt; defines the position of the gate:
     Zero means completely open/down, the "number of animation-steps" (usually

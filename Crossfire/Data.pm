@@ -156,7 +156,8 @@ our %LIST = (
     10 => 'trigger',
     11 => 'close',
     12 => 'timer',
-    28 => 'move'
+    28 => 'move',
+    41 => 'drop_on'
   },
   mood => {
     0 => 'furious',
@@ -1564,6 +1565,22 @@ our %TYPE = (
 	}
       ],
       [
+	'activate_on_push',
+	{
+	  desc => 'Whether the teleporter should only be activated on push.',
+	  name => 'Activate on push',
+	  type => 'bool'
+	}
+      ],
+      [
+	'activate_on_release',
+	{
+	  desc => 'Whether the teleporter should only be activated on release.',
+	  name => 'Activate on release',
+	  type => 'bool'
+	}
+      ],
+      [
 	'lifesave',
 	{
 	  desc => 'If <infinit uses> is set, the creator will work infinitely, regardless of the value in <number of uses>.',
@@ -2035,7 +2052,7 @@ our %TYPE = (
       [
 	'other_arch',
 	{
-	  desc => 'Only objects of matching archtype, lying ontop of the dublicator will be dublicated, multiplied or removed. All other objects will be ignored.',
+	  desc => 'Only objects of matching archtype, lying ontop of the duplicator will be duplicated, multiplied or removed. All other objects will be ignored.',
 	  name => 'target arch',
 	  type => 'string'
 	}
@@ -2054,6 +2071,22 @@ our %TYPE = (
 	  desc => 'An activator (lever, altar, button, etc) with matching connection value is able to trigger this duplicator. Be very careful that players cannot abuse it to create endless amounts of money or other valuable stuff!',
 	  name => 'connection',
 	  type => 'int'
+	}
+      ],
+      [
+	'activate_on_push',
+	{
+	  desc => 'Whether the teleporter should only be activated on push.',
+	  name => 'Activate on push',
+	  type => 'bool'
+	}
+      ],
+      [
+	'activate_on_release',
+	{
+	  desc => 'Whether the teleporter should only be activated on release.',
+	  name => 'Activate on release',
+	  type => 'bool'
 	}
       ]
     ],
@@ -2614,6 +2647,13 @@ our %TYPE = (
 	}
       ],
       [
+	'speed',
+	{
+	  desc => 'The speed of the gate affects how fast it is closing/opening.',
+	  type => 'float'
+	}
+      ],
+      [
 	'connected',
 	{
 	  desc => 'Whenever the inventory checker is triggered, all objects with identical <connection> value get activated. This only makes sense together with <blocking passage> disabled.',
@@ -2962,7 +3002,7 @@ our %TYPE = (
       [
 	'level',
 	{
-	  desc => 'To re-consecrate an altar, the player\'s wisdom level must be as high or higher than this value. In that way, some altars can not be re-consecrated, while other altars, like those in dungeons, could be. Altars located in temples should have at least <reconsecrate level> 100. Some characters might need those altars, they would be very unhappy to see them re-consecrated to another cult.',
+	  desc => 'To re-consecrate an altar, the player\'s wisdom level must be as high or higher than this value. In that way, some altars can not be re-consecrated, while other altars, like those in dungeons, could be. Altars located in temples should have at least <reconsecrate level> 120. Some characters might need those altars, they would be very unhappy to see them re-consecrated to another cult.',
 	  name => 'reconsecrate level',
 	  type => 'int'
 	}
@@ -3428,6 +3468,22 @@ our %TYPE = (
 	  desc => 'Every time the <connection> value is triggered, the wall will cast it\'s spell. You should set <casting speed> to zero, or this won\'t have much visible effect.',
 	  name => 'connection',
 	  type => 'int'
+	}
+      ],
+      [
+	'activate_on_push',
+	{
+	  desc => 'Whether the teleporter should only be activated on push.',
+	  name => 'Activate on push',
+	  type => 'bool'
+	}
+      ],
+      [
+	'activate_on_release',
+	{
+	  desc => 'Whether the teleporter should only be activated on release.',
+	  name => 'Activate on release',
+	  type => 'bool'
 	}
       ],
       [
@@ -4717,6 +4773,22 @@ our %TYPE = (
 	}
       ],
       [
+	'activate_on_push',
+	{
+	  desc => 'Whether the teleporter should only be activated on push.',
+	  name => 'Activate on push',
+	  type => 'bool'
+	}
+      ],
+      [
+	'activate_on_release',
+	{
+	  desc => 'Whether the teleporter should only be activated on release.',
+	  name => 'Activate on release',
+	  type => 'bool'
+	}
+      ],
+      [
 	'hp',
 	{
 	  desc => 'The pit will transport creatures (and items) randomly into a two-square radius of the destination coordinates. If the destination square becomes blocked, the pit will act like being filled up and not work anymore!',
@@ -5297,6 +5369,23 @@ our %TYPE = (
     ],
     use => 'Avoid monsters stepping on your runes. For example, summoning runes together with spellcasting- and attack-runes is usually a bad idea.'
   },
+  'Safe ground (CF+)' => {
+    attr => [
+      [
+	'no_pick',
+	{
+	  type => 'fixed',
+	  value => 1
+	}
+      ]
+    ],
+    desc => 'Safe ground is a special object that prevents any effects that might be harmful for the map, other players or items on the map. It blocks all magic and prayers, usage of alchemy, prevents potions from being used and blocks bombs from exploding. Note that altars that do cast spells still work. (This is a Crossfire+ feature, and might not work elsewhere)',
+    ignore => [
+      $IGNORE_LIST{non_pickable}
+    ],
+    name => 'Safe ground (CF+)',
+    use => 'Safe ground can be used to prevents any means of burning or destroying the items in a shop. Put this object below all floor tiles in your map and your shop will be safe. It\'s generally useful for making areas where really no kind of spell should be invoked by a player.'
+  },
   Savebed => {
     attr => [
       [
@@ -5472,7 +5561,7 @@ our %TYPE = (
 	}
       ]
     ],
-    desc => 'Schooting weapons like bows/crossbows are used to shoot projectiles (arrows/bolts). Shooting weapons and normal (melee) weapons can be wielded both at the same time. Like with any other equipment, stats/bonuses from shooting weapons are directly inherited to the player. <br><br> It\'s very easy to add new pairs of weapons &amp; projectiles. Just set matching &lt;ammunition class&gt; both for shooting weapon and projectile.',
+    desc => 'Shooting weapons like bows/crossbows are used to shoot projectiles (arrows/bolts). Shooting weapons and normal (melee) weapons can be wielded both at the same time. Like with any other equipment, stats/bonuses from shooting weapons are directly inherited to the player. <br><br> It\'s very easy to add new pairs of weapons &amp; projectiles. Just set matching &lt;ammunition class&gt; both for shooting weapon and projectile.',
     name => 'Shooting Weapon',
     section => [
       [
@@ -5558,7 +5647,7 @@ our %TYPE = (
 	]
       ]
     ],
-    use => 'Shooting weapons should not add bonuses in general. There\'s already enough "equipment-slots" doing that: swords, rings, amulets, girdles etc. Schooting weapons should especially not add bonuses to the player that have nothing to do with schooting. A Wisdom bonus on a bow is crap for example! A name like "Longbow of great Wisdom" doesn\'t help - still crap.'
+    use => 'Shooting weapons should not add bonuses in general. There\'s already enough "equipment-slots" doing that: swords, rings, amulets, girdles etc. Shooting weapons should especially not add bonuses to the player that have nothing to do with schooting. A Wisdom bonus on a bow is crap for example! A name like "Longbow of great Wisdom" doesn\'t help - still crap.'
   },
   'Shop Floor' => {
     attr => [
@@ -5657,6 +5746,22 @@ our %TYPE = (
 	  desc => 'When a connection value is set, the message will be printed whenever the connection is triggered. This should be used in combination with <invisible> enabled and <activate by walking/flying> disabled. If activating your magic_mouth this way, the message will not only be printed to one player, but all players on the current map.',
 	  name => 'connection',
 	  type => 'int'
+	}
+      ],
+      [
+	'activate_on_push',
+	{
+	  desc => 'Whether the teleporter should only be activated on push.',
+	  name => 'Activate on push',
+	  type => 'bool'
+	}
+      ],
+      [
+	'activate_on_release',
+	{
+	  desc => 'Whether the teleporter should only be activated on release.',
+	  name => 'Activate on release',
+	  type => 'bool'
 	}
       ],
       [
@@ -6128,6 +6233,22 @@ our %TYPE = (
 	}
       ],
       [
+	'activate_on_push',
+	{
+	  desc => 'Whether the teleporter should only be activated on push.',
+	  name => 'Activate on push',
+	  type => 'bool'
+	}
+      ],
+      [
+	'activate_on_release',
+	{
+	  desc => 'Whether the teleporter should only be activated on release.',
+	  name => 'Activate on release',
+	  type => 'bool'
+	}
+      ],
+      [
 	'speed',
 	{
 	  desc => 'If the <activation speed> is nonzero, the teleporter will automatically be activated in regular time-intervals. Hence, the player can just step on it and gets teleported sooner or later. The duration between two activates depends on the given value. Default in the teleporter arch is <activation speed> 0.1. VERY IMPORTANT: If you want to have your teleporter activated via button/handle/magic_ear/etc, you must set <activation speed> to zero!',
@@ -6166,6 +6287,22 @@ our %TYPE = (
 	  desc => 'Whenever the inventory checker is triggered, all objects with identical <connection> value get activated. This only makes sense together with <blocking passage> disabled. If unset, the gate opens automatically after some time.',
 	  name => 'connection',
 	  type => 'int'
+	}
+      ],
+      [
+	'activate_on_push',
+	{
+	  desc => 'Whether the teleporter should only be activated on push.',
+	  name => 'Activate on push',
+	  type => 'bool'
+	}
+      ],
+      [
+	'activate_on_release',
+	{
+	  desc => 'Whether the teleporter should only be activated on release.',
+	  name => 'Activate on release',
+	  type => 'bool'
 	}
       ],
       [
@@ -7369,7 +7506,8 @@ our %ATTR = (
   155 => $TYPE{Trap},
   156 => $TYPE{'Power Crystal'},
   158 => $TYPE{Disease},
-  163 => $TYPE{'Item Transformer'}
+  163 => $TYPE{'Item Transformer'},
+  165 => $TYPE{'Safe ground (CF+)'}
 );
 
 our %TYPENAME = (

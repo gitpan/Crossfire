@@ -6,7 +6,7 @@ Crossfire - Crossfire maphandling
 
 package Crossfire;
 
-our $VERSION = '0.8';
+our $VERSION = '0.9';
 
 use strict;
 
@@ -20,6 +20,18 @@ use Storable qw(freeze thaw);
 our @EXPORT = qw(
    read_pak read_arch *ARCH TILESIZE $TILE *FACE editor_archs arch_extents
 );
+
+use JSON::Syck (); #TODO#d# replace by JSON::PC when it becomes available == working
+
+sub from_json($) {
+   $JSON::Syck::ImplicitUnicode = 1;
+   JSON::Syck::Load $_[0]
+}
+
+sub to_json($) {
+   $JSON::Syck::ImplicitUnicode = 0;
+   JSON::Syck::Dump $_[0]
+}
 
 our $LIB = $ENV{CROSSFIRE_LIBDIR};
 
@@ -46,7 +58,7 @@ our %FIELD_MOVEMENT = map +($_ => undef),
 # same as in server save routine, to (hopefully) be compatible
 # to the other editors.
 our @FIELD_ORDER_MAP = (qw(
-   name swap_time reset_timeout fixed_resettime difficulty region
+   name attach swap_time reset_timeout fixed_resettime difficulty region
    shopitems shopgreed shopmin shopmax shoprace
    darkness width height enter_x enter_y msg maplore
    unique template
@@ -57,7 +69,7 @@ our @FIELD_ORDER_MAP = (qw(
 our @FIELD_ORDER = (qw(
    elevation
 
-   name name_pl custom_name title race
+   name name_pl custom_name attach title race
    slaying skill msg lore other_arch face
    #todo-events
    animation is_animated
@@ -150,15 +162,56 @@ sub save_ref($$) {
       or die "$path: $!";
 }
 
+my %attack_mask = (
+   physical      => 0x00000001,
+   magic         => 0x00000002,
+   fire          => 0x00000004,
+   electricity   => 0x00000008,
+   cold          => 0x00000010,
+   confusion     => 0x00000020,
+   acid          => 0x00000040,
+   drain         => 0x00000080,
+   weaponmagic   => 0x00000100,
+   ghosthit      => 0x00000200,
+   poison        => 0x00000400,
+   slow          => 0x00000800,
+   paralyze      => 0x00001000,
+   turn_undead   => 0x00002000,
+   fear          => 0x00004000,
+   cancellation  => 0x00008000,
+   deplete       => 0x00010000,
+   death         => 0x00020000,
+   chaos         => 0x00040000,
+   counterspell  => 0x00080000,
+   godpower      => 0x00100000,
+   holyword      => 0x00200000,
+   blind         => 0x00400000,
+   internal      => 0x00800000,
+   life_stealing => 0x01000000,
+   disease       => 0x02000000,
+);
+
+sub _add_resist($$$) {
+   my ($ob, $mask, $value) = @_;
+
+   while (my ($k, $v) = each %attack_mask) {
+      $ob->{"resist_$k"} = min 100, max -100, $ob->{"resist_$k"} + $value if $mask & $v;
+   }
+}
+
 # object as in "Object xxx", i.e. archetypes
 sub normalize_object($) {
    my ($ob) = @_;
 
    # nuke outdated or never supported fields
-   delete $ob->{$_} for qw(
+   delete @$ob{qw(
       can_knockback can_parry can_impale can_cut can_dam_armour
       can_apply pass_thru can_pass_thru
-   );
+   )};
+
+   if (my $mask = delete $ob->{immune}    ) { _add_resist $ob, $mask,  100; }
+   if (my $mask = delete $ob->{protected} ) { _add_resist $ob, $mask,   30; }
+   if (my $mask = delete $ob->{vulnerable}) { _add_resist $ob, $mask, -100; }
 
    # convert movement strings to bitsets
    for my $attr (keys %FIELD_MOVEMENT) {
@@ -238,6 +291,9 @@ sub normalize_object($) {
       }
    }
 
+   # some archetypes had "+3" instead of the canonical "3", so fix
+   $ob->{dam} *= 1 if exists $ob->{dam};
+
    $ob
 }
 
@@ -288,6 +344,24 @@ sub normalize_arch($) {
    $ob
 }
 
+sub attr_thaw($) {
+   my ($ob) = @_;
+
+   $ob->{attach} = from_json $ob->{attach}
+      if exists $ob->{attach};
+
+   $ob
+}
+
+sub attr_freeze($) {
+   my ($ob) = @_;
+
+   $ob->{attach} = Crossfire::to_json $ob->{attach}
+      if exists $ob->{attach};
+
+   $ob
+}
+
 sub read_pak($) {
    my ($path) = @_;
 
@@ -324,7 +398,7 @@ sub read_arch($;$) {
          if (/^end$/i) {
             last;
          } elsif (/^arch (\S+)$/i) {
-            push @{ $arc{inventory} }, normalize_arch $parse_block->(_name => $1);
+            push @{ $arc{inventory} }, attr_thaw normalize_arch $parse_block->(_name => $1);
          } elsif (/^lore$/i) {
             while (<$fh>) {
                last if /^endlore\s*$/i;
@@ -359,7 +433,8 @@ sub read_arch($;$) {
          $more = $prev;
       } elsif (/^object (\S+)$/i) {
          my $name = $1;
-         my $arc = normalize_object $parse_block->(_name => $name);
+         my $arc = attr_thaw normalize_object $parse_block->(_name => $name);
+         $arc->{_atype} = 'object';
 
          if ($more) {
             $more->{more} = $arc;
@@ -370,7 +445,8 @@ sub read_arch($;$) {
          $more = undef;
       } elsif (/^arch (\S+)$/i) {
          my $name = $1;
-         my $arc = normalize_arch $parse_block->(_name => $name);
+         my $arc = attr_thaw normalize_arch $parse_block->(_name => $name);
+         $arc->{_atype} = 'arch';
 
          if ($more) {
             $more->{more} = $arc;
@@ -398,6 +474,104 @@ sub read_arch($;$) {
    undef $parse_block; # work around bug in perl not freeing $fh etc.
 
    \%arc
+}
+
+sub archlist_to_string {
+   my ($arch) = @_;
+
+   my $str;
+
+   my $append; $append = sub {
+      my %a = %{$_[0]};
+
+      Crossfire::attr_freeze \%a;
+      Crossfire::normalize_arch \%a;
+
+      # undo the bit-split we did before
+      if (exists $a{attack_movement_bits_0_3} or exists $a{attack_movement_bits_4_7}) {
+         $a{attack_movement} = (delete $a{attack_movement_bits_0_3})
+                             | (delete $a{attack_movement_bits_4_7});
+      }
+
+      $str .= ((exists $a{_atype}) ? $a{_atype} : 'arch'). " $a{_name}\n";
+
+      my $inv = delete $a{inventory};
+      my $more = delete $a{more}; # arches do not support 'more', but old maps can contain some
+      my $anim = delete $a{anim};
+
+      my @kv;
+
+      for ($a{_name} eq "map"
+           ? @Crossfire::FIELD_ORDER_MAP
+           : @Crossfire::FIELD_ORDER) {
+         push @kv, [$_, delete $a{$_}]
+            if exists $a{$_};
+      }
+
+      for (sort keys %a) {
+         next if /^_/; # ignore our _-keys
+         push @kv, [$_, delete $a{$_}];
+      }
+
+      for (@kv) {
+         my ($k, $v) = @$_;
+
+         if (my $end = $Crossfire::FIELD_MULTILINE{$k}) {
+            $v =~ s/\n$//;
+            $str .= "$k\n$v\n$end\n";
+         } elsif (exists $Crossfire::FIELD_MOVEMENT{$k}) {
+            if ($v & ~Crossfire::MOVE_ALL or !$v) {
+               $str .= "$k $v\n";
+
+            } elsif ($v & Crossfire::MOVE_ALLBIT) {
+               $str .= "$k all";
+
+               $str .= " -walk"     unless $v & Crossfire::MOVE_WALK;
+               $str .= " -fly_low"  unless $v & Crossfire::MOVE_FLY_LOW;
+               $str .= " -fly_high" unless $v & Crossfire::MOVE_FLY_HIGH;
+               $str .= " -swim"     unless $v & Crossfire::MOVE_SWIM;
+               $str .= " -boat"     unless $v & Crossfire::MOVE_BOAT;
+
+               $str .= "\n";
+
+            } else {
+               $str .= $k;
+
+               $str .= " walk"     if $v & Crossfire::MOVE_WALK;
+               $str .= " fly_low"  if $v & Crossfire::MOVE_FLY_LOW;
+               $str .= " fly_high" if $v & Crossfire::MOVE_FLY_HIGH;
+               $str .= " swim"     if $v & Crossfire::MOVE_SWIM;
+               $str .= " boat"     if $v & Crossfire::MOVE_BOAT;
+
+               $str .= "\n";
+            }
+         } else {
+            $str .= "$k $v\n";
+         }
+      }
+
+      if ($inv) {
+         $append->($_) for @$inv;
+      }
+
+      if ($a{_atype} eq 'object') {
+         $str .= join "\n", "anim", @$anim, "mina\n"
+            if $anim;
+      }
+
+      $str .= "end\n";
+
+      if (($a{_atype} eq 'object') && $more) {
+         $str .= "\nmore\n";
+         $append->($more) if $more;
+      }
+   };
+
+   for (@$arch) {
+      $append->($_);
+   }
+
+   $str
 }
 
 # put all archs into a hash with editor_face as it's key

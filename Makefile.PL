@@ -12,7 +12,7 @@ my $mm = MM->new({
     },
     NAME         => "Crossfire",
     VERSION_FROM => "Crossfire.pm",
-    EXE_FILES    => ["bin/cfmap-normalize"],
+    EXE_FILES    => [qw(bin/cfarch-normalize bin/cfmap-normalize bin/cfmap-plushify)],
 
 });
 

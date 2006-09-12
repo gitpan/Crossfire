@@ -10,7 +10,7 @@ Crossfire/Protocol/Constants.pm
 Crossfire/Protocol/Base.pm
 Crossfire/Protocol.pm
 bin/cfmap-normalize
-bin/cfmap-fixdialogue
+bin/cfmap-plushify
 res2pm
 res/README
 res/autojoin.txt

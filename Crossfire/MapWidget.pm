@@ -447,7 +447,7 @@ sub set {
 
             $x1 = min $x1, $x; $y1 = min $y1, $y;
             $x2 = max $x2, $x; $y2 = max $y2, $y;
-            
+
             $data->[$x][$y] = [ grep $_->{_virtual} != $a, @{ $data->[$x][$y] } ];
          }
       }

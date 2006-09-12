@@ -1,0 +1,147 @@
+#!/opt/bin/perl
+
+# this script checks, fixes and simplifies @match expressions in a map
+
+use Crossfire::Map;
+
+sub fix_msg($) {
+   my ($msg) = @_;
+
+   local $_ = $msg;
+
+   # fx pretty common error of having "* First line of response"
+   my $response = s/^\* (.*)/*/ ? "\n$1" : "";
+
+   warn "$path ($_) unexpected characters in match \n" if !/^[a-zA-Z\[\]\|\*\!\' 0-9\-\?]+$/;
+
+   s/\[(.)(.)\]/(lc $1) eq (lc $2) ? lc $1 : "[$1$2]"/ge;
+
+   my %alt;
+
+   for my $kw (split /\|/) {
+      $kw =~ s/^\s+//;
+      $kw =~ s/\s+$//;
+
+      $alt{lc $kw} = $kw;
+   }
+
+   $_ = join "|", sort keys %alt;
+
+   $_ .= $response;
+
+   warn "$path <$msg><$_>\n" if $_ ne $msg;
+   warn "$path ($_) unexpected characters in match\n" if /[\[\]]/;
+
+   $_
+}
+
+sub patch_perl {
+  my ($arch) = @_;
+
+  my $patched;
+
+  my $inv = $arch->{inventory} || [];
+
+  for (@$inv) {
+     if ($_->{type} == 116 || $_->{_name} =~ /^event_/) {
+        # crossfire to old crossfire+
+        if ($_->{slaying} eq '/python/IPO/send.py') {
+           $_->{title} = 'perl';
+           $_->{slaying} = 'ipo';
+           $patched++
+        } elsif ($_->{slaying} eq '/python/IPO/receive.py') {
+           $_->{title} = 'perl';
+           $_->{slaying} = 'ipo';
+           $patched++;
+        } elsif ($_->{slaying} eq '/python/IPO/board.py') {
+           $_ = { _name => 'event_apply', title => 'perl', slaying => 'board' };
+           $arch->{msg} = '@match *'."\n".'@eval board::command $who, $msg, $npc'."\n";
+           $patched++;
+        } elsif ($_->{slaying} eq '/python/IPO/say.py') {
+           $arch->{msg} = '@match *'."\n".'@eval ipo::command $who, $msg, $npc'."\n";
+           $_ = undef;
+           $patched++;
+        } elsif ($_->{slaying} eq '/python/IPO/banksay.py') {
+           $arch->{msg} = '@match *'."\n".'@eval bank::command $who, $msg, $npc'."\n";
+           $_ = undef;
+           $patched++;
+        }
+
+        # old crossfire+ to new plug-in system
+        if ($_ && $_->{title} eq "perl") {
+           if ($_->{slaying} eq "board") {
+              push @{$arch->{attach}}, ["board"];
+              $_ = undef;
+              $patched++;
+           } elsif ($_->{slaying} eq "ipo") {
+              if ($_->{_name} eq "event_close") {
+                 push @{$arch->{attach}}, ["ipo_mailbox"];
+              } elsif ($_->{_name} eq "event_apply") {
+                 #
+              }
+              $_ = undef;
+              $patched++;
+           } elsif ($_->{slaying} eq "nimbus") {
+              push @{$arch->{attach}}, ["nimbus_exit", { restore => $_->{name} eq "restore"}];
+              $_ = undef;
+              $patched++;
+           } elsif ($_->{slaying} eq "minesweeper") {
+              push @{$arch->{attach}}, ["minesweeper", { split /(?:\s+|=)/, $_->{name} }];
+              $_ = undef;
+              $patched++;
+           } elsif ($_->{slaying} eq "reseller") {
+              if ($_->{_name} eq "event_drop_on") {
+                 push @{$arch->{attach}}, ["reseller_floor"];
+              } elsif ($_->{_name} eq "event_trigger") {
+                 my ($a, $b, $c) = split /,/, $_->{name};
+                 push @{$arch->{attach}}, ["reseller_shopmat", {npc_name => $a, npc_x => $b, npc_y => $c}];
+              }
+              $_ = undef;
+              $patched++;
+           } else {
+              warn "WARNING: unsupported perl event<$_->{slaying}>\n";#d#
+           }
+        }
+     }
+  }
+
+  $arch->{inventory} = [grep $_, @$inv];
+
+  $patched
+}
+
+for $path (@ARGV) {
+   eval {
+      open my $fh, "<:raw:perlio:utf8", $path
+         or die "$path: $!\n";
+
+      <$fh> =~ /^arch \S+$/
+         or die "$path: not a crossfire map file\n";
+
+      my $map = new_from_file Crossfire::Map $path
+         or die "$path: file load error\n";
+
+      my $dirty;
+
+      for my $a (map @$_, grep $_, map @$_, grep $_, @{ $map->{map} }) {
+         if ($a->{inventory} and patch_perl ($a)) {
+            $dirty = 1;
+            next;
+         }
+
+         next unless $a->{msg} =~ /^\@match /;
+
+         my $old = $a->{msg};
+
+         $a->{msg} =~ s/^(\@match\s+)(.*)$/$1 . fix_msg $2/gme;
+
+         $dirty ||= $old ne $a->{msg};
+      }
+
+      $map->write_file ($path)
+         if $dirty;
+
+      1
+   } or $@ =~ /not a crossfire map/ or warn $@;
+}
+
