@@ -1,0 +1,28 @@
+#!/opt/bin/perl
+
+use Crossfire;
+
+load_archetypes;
+
+for my $path (@ARGV) {
+   eval {
+      open my $fh, "<:raw:perlio:utf8", $path
+         or die "$path: $!\n";
+
+      <$fh> =~ /^Object/i
+         or die "$path: not a crossfire arch file\n";
+
+      my $arch = read_arch ($path);
+
+
+
+      open my $fh2, ">:raw:utf8", "$path~" or Carp::croak "$path~: $!";
+      print $fh2 Crossfire::archlist_to_string ([values %$arch])
+                                           or Carp::croak "$path~: $!";
+      close $fh2                           or Carp::croak "$path~: $!";
+      rename "$path~", $path;
+
+      1
+   } or warn $@;
+}
+
