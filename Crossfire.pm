@@ -6,7 +6,7 @@ Crossfire - Crossfire maphandling
 
 package Crossfire;
 
-our $VERSION = '0.91';
+our $VERSION = '0.92';
 
 use strict;
 
@@ -35,7 +35,9 @@ sub to_json($) {
 
 our $LIB = $ENV{CROSSFIRE_LIBDIR};
 
-our $VARDIR = $ENV{HOME} ? "$ENV{HOME}/.crossfire" : File::Spec->tmpdir . "/crossfire";
+our $VARDIR = $ENV{HOME}    ? "$ENV{HOME}/.crossfire"
+            : $ENV{AppData} ? "$ENV{APPDATA}/crossfire"
+            : File::Spec->tmpdir . "/crossfire";
 
 mkdir $VARDIR, 0777;
 
