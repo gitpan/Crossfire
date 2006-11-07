@@ -16,7 +16,7 @@ Base class to implement a crossfire client.
 
 package Crossfire::Protocol::Base;
 
-our $VERSION = '0.1';
+our $VERSION = '0.95';
 
 use strict;
 
@@ -122,6 +122,21 @@ sub feed_version {
    $self->{version} = $version;
 }
 
+=back
+
+=head2 METHODS THAT CAN/MUST BE OVERWRITTEN
+
+=over 4
+
+=item $self->setup ($setup)
+
+Called after the last setup packet has been received, just before an addme
+request is sent.
+
+=cut
+
+sub setup { }
+
 sub feed_setup {
    my ($self, $data) = @_;
 
@@ -147,10 +162,10 @@ sub feed_setup {
       ($self->{mapw}, $self->{maph}) = ($mapw, $maph);
       $self->send_setup;
    } else {
+      $self->setup ($self->{setup});
       $self->send ("addme");
+      $self->feed_newmap;
    }
-
-   $self->feed_newmap;
 }
 
 sub feed_eof {
@@ -194,12 +209,6 @@ sub destroy {
 
    %$self = ();
 }
-
-=back
-
-=head2 METHODS THAT CAN/MUST BE OVERWRITTEN
-
-=over 4
 
 =item $self->addme_success
 
