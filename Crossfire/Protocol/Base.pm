@@ -109,9 +109,19 @@ sub feed {
    $data =~ s/^(\S+)(?:\s|$)//
       or return;
 
-   my $command = "feed_$1";
+   eval {
+      my $command = "feed_$1";
 
-   $self->$command ($data);
+      $self->$command ($data);
+   };
+
+   warn $@ if $@;
+}
+
+sub feed_goodbye {
+   my ($self) = @_;
+
+   # nop
 }
 
 sub feed_version {
@@ -284,7 +294,7 @@ sub feed_query {
 
    my ($flags, $prompt) = split /\s+/, $data, 2;
 
-   if ($flags == 0 && $prompt =~ /^What is your name\?\s+:$/ && length $self->{user}) {
+   if ($flags == 0 && $prompt =~ /What is your name\?/ && length $self->{user}) {
       if ($self->{sent_login}) {
          delete $self->{user};
          delete $self->{pass};
@@ -293,9 +303,9 @@ sub feed_query {
          $self->send ("reply $self->{user}");
          $self->{sent_login} = 1;
       }
-   } elsif ($flags == 4 && $prompt =~ /^What is your password\?\s+:$/ && length $self->{pass}) {
+   } elsif ($flags == 4 && $prompt =~ /What is your password\?/ && length $self->{pass}) {
       $self->send ("reply $self->{pass}");
-   } elsif ($flags == 4 && $prompt =~ /^Please type your password again\.\s+:$/ && length $self->{pass}) {
+   } elsif ($flags == 4 && $prompt =~ /Please type your password again\./ && length $self->{pass}) {
       $self->send ("reply $self->{pass}");
    } else {
       $self->query ($flags, $prompt);

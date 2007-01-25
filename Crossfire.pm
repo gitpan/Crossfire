@@ -6,7 +6,7 @@ Crossfire - Crossfire maphandling
 
 package Crossfire;
 
-our $VERSION = '0.95';
+our $VERSION = '0.96';
 
 use strict;
 
@@ -604,8 +604,11 @@ sub arch_extents {
    my $o = $ARCH{$a->{_name}}
       or return;
 
-   my $face = $FACE{$a->{face} || $o->{face} || "blank.111"}
-      or (warn "no face data found for arch '$a->{_name}'"), return;
+   my $face = $FACE{$a->{face} || $o->{face} || "blank.111"};
+   unless ($face) {
+      $face = $FACE{"blank.x11"}
+         or (warn "no face data found for arch '$a->{_name}'"), return;
+   }
 
    if ($face->{w} > 1 || $face->{h} > 1) { 
       # bigface

@@ -175,6 +175,7 @@ my %CONSTANTS = (
    PICKUP_NOT_CURSED => 0x01000000,
   
    PICKUP_JEWELS => 0x02000000,
+   PICKUP_FLESH  => 0x04000000,
 );
 
 eval join "\n", (map "sub $_ () { $CONSTANTS{$_} }", keys %CONSTANTS), 1

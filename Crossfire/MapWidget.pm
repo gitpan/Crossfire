@@ -465,8 +465,11 @@ sub set {
       my $o = $ARCH{$a->{_name}} || $ARCH{empty_archetype}
          or (warn "archetype $a->{_name} is unknown at ($x|$y)\n"), next;
 
-      my $face = $FACE{$a->{face} || $o->{face} || "blank.111"}
-         or (warn "no gfx found for arch '$a->{_name}' at ($x|$y)\n"), next;
+      my $face = $FACE{$a->{face} || $o->{face} || "blank.111"};
+      unless ($face) {
+         $face = $FACE{"blank.x11"}
+            or (warn "no gfx found for arch '$a->{_name}' at ($x|$y)\n"), next;
+      }
 
       $a->{_face} = $face->{idx};
 
@@ -494,8 +497,11 @@ sub set {
          # linked faces, slowest and most annoying
 
          while ($o = $o->{more}) {
-            my $face = $FACE{$o->{face} || "blank.111"}
-               or (warn "no gfx found for arch '$a->{_name}' at ($x*|$y*)\n"), next;
+            my $face = $FACE{$o->{face} || "blank.111"};
+            unless ($face) {
+               $face = $FACE{"blank.x11"}
+                  or (warn "no gfx found for arch '$a->{_name}' at ($x*|$y*)\n"), next;
+            }
 
             $x1 = min $x1, $x + $o->{x}; $y1 = min $y1, $y + $o->{y};
             $x2 = max $x2, $x + $o->{x}; $y2 = max $y2, $y + $o->{y};

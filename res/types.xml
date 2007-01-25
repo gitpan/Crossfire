@@ -1454,7 +1454,8 @@
   <description><![CDATA[
     A creator is an object which creates another object when it
     is triggered. The child object can be anything. Creators are
-    VERY useful for all kinds of map-mechanisms. ]]>
+    VERY useful for all kinds of map-mechanisms. They can even
+    periodically create things. ]]>
   </description>
   <use><![CDATA[
     Don't hesitate to hide your creators under the floor.
@@ -1476,6 +1477,11 @@
   <attribute arch="lifesave" editor="infinit uses" type="bool">
     If &lt;infinit uses&gt; is set, the creator will work
     infinitely, regardless of the value in &lt;number of uses&gt;.
+  </attribute>
+  <attribute arch="speed" editor="speed" type="float">
+    When this field is set the creator will periodically create stuff
+    (and will still do so when the connection is triggered).
+    A value of 1 means roughly 8 times a second.
   </attribute>
   <attribute arch="hp" editor="number of uses" type="int">
     The creator can be triggered &lt;number of uses&gt; times, thus

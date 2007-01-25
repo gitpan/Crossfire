@@ -1589,6 +1589,14 @@ our %TYPE = (
 	}
       ],
       [
+	'speed',
+	{
+	  desc => 'When this field is set the creator will periodically create stuff (and will still do so when the connection is triggered). A value of 1 means roughly 8 times a second.',
+	  name => 'speed',
+	  type => 'float'
+	}
+      ],
+      [
 	'hp',
 	{
 	  desc => 'The creator can be triggered <number of uses> times, thus creating that many objects, before it dissappears. Default is <number of uses> 1 (-> one-time usage).',
@@ -1613,7 +1621,7 @@ our %TYPE = (
 	}
       ]
     ],
-    desc => 'A creator is an object which creates another object when it is triggered. The child object can be anything. Creators are VERY useful for all kinds of map-mechanisms.',
+    desc => 'A creator is an object which creates another object when it is triggered. The child object can be anything. Creators are VERY useful for all kinds of map-mechanisms. They can even periodically create things.',
     ignore => [
       $IGNORE_LIST{system_object}
     ],
