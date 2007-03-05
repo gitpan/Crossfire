@@ -112,30 +112,30 @@
                       false      CDATA #IMPLIED>
 
   <!ENTITY move_on "
-     <attribute arch='move_on' editor='movement type' type='bitmask_movement_type'>
+     <attribute arch='move_on' editor='movement type' type='movement_type'>
         Which movement types automatically (as opposed to manually) activate this object.
      </attribute>
   ">
   <!ENTITY move_off "
-     <attribute arch='move_off' editor='movement type' type='bitmask_movement_type'>
+     <attribute arch='move_off' editor='movement type' type='movement_type'>
         Which movement types deactivate this object (e.g. button).
      </attribute>
   ">
   <!ENTITY move_type "
-     <attribute arch='move_type' editor='movement type' type='bitmask_movement_type'>
+     <attribute arch='move_type' editor='movement type' type='movement_type'>
         Determines which kinds of movement this object can use (e.g. for monsters)
         or grants (e.g. for amulets).
      </attribute>
   ">
   <!ENTITY movement_types_terrain "
-     <attribute arch='move_block' editor='blocked movement' type='bitmask_movement_type'>
+     <attribute arch='move_block' editor='blocked movement' type='movement_type'>
        Objects using these movement types cannot move over this space.
      </attribute>
-     <attribute arch='move_allow' editor='allowed movement' type='bitmask_movement_type'>
+     <attribute arch='move_allow' editor='allowed movement' type='movement_type'>
        Objects using these movement types are allowed to move over this space. Takes
        precedence over 'blocked movements'.
      </attribute>
-     <attribute arch='move_slow' editor='slowed movement' type='bitmask_movement_type'>
+     <attribute arch='move_slow' editor='slowed movement' type='movement_type'>
        The types of movement that should by slowed down by the 'slow movement penalty'.
      </attribute>
      <attribute arch='move_slow_penalty' editor='slow movement penalty' type='int'>

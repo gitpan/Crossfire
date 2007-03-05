@@ -6,20 +6,26 @@ load_archetypes;
 
 for my $path (@ARGV) {
    eval {
-      open my $fh, "<:raw:perlio:utf8", $path
-         or die "$path: $!\n";
+      {
+         open my $fh, "<:raw:perlio:utf8", $path
+            or die "$path: $!\n";
 
-      <$fh> =~ /^Object/i
-         or die "$path: not a crossfire arch file\n";
+         sysread $fh, my $buf, 8192;
+         $buf =~ /^Object \S+\n.*^end$/ism
+            or die "$path: not a crossfire arch file\n";
+      }
 
       my $arch = read_arch ($path);
 
+      $arch = [
+         map $arch->{$_},
+            sort keys %$arch
+      ];
 
-
-      open my $fh2, ">:raw:utf8", "$path~" or Carp::croak "$path~: $!";
-      print $fh2 Crossfire::archlist_to_string ([values %$arch])
-                                           or Carp::croak "$path~: $!";
-      close $fh2                           or Carp::croak "$path~: $!";
+      open my $fh, ">:raw:utf8", "$path~" or Carp::croak "$path~: $!";
+      print $fh Crossfire::archlist_to_string ($arch)
+                                          or Carp::croak "$path~: $!";
+      close $fh                           or Carp::croak "$path~: $!";
       rename "$path~", $path;
 
       1

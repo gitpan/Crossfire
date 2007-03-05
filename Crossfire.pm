@@ -6,7 +6,7 @@ Crossfire - Crossfire maphandling
 
 package Crossfire;
 
-our $VERSION = '0.96';
+our $VERSION = '0.97';
 
 use strict;
 
@@ -60,6 +60,7 @@ our %FIELD_MOVEMENT = map +($_ => undef),
 # same as in server save routine, to (hopefully) be compatible
 # to the other editors.
 our @FIELD_ORDER_MAP = (qw(
+   file_format_version
    name attach swap_time reset_timeout fixed_resettime difficulty region
    shopitems shopgreed shopmin shopmax shoprace
    darkness width height enter_x enter_y msg maplore
@@ -140,8 +141,106 @@ sub MOVE_FLYING    (){ 0x06 }
 sub MOVE_SWIM      (){ 0x08 }
 sub MOVE_BOAT      (){ 0x10 }
 sub MOVE_KNOWN     (){ 0x1f } # all of above
-sub MOVE_ALLBIT    (){ 0x10000 }
-sub MOVE_ALL       (){ 0x1001f } # very special value, more PITA
+sub MOVE_ALL       (){ 0x10000 } # very special value
+
+our %MOVE_TYPE = (
+   walk     => MOVE_WALK,
+   fly_low  => MOVE_FLY_LOW,
+   fly_high => MOVE_FLY_HIGH,
+   flying   => MOVE_FLYING,
+   swim     => MOVE_SWIM,
+   boat     => MOVE_BOAT,
+   all      => MOVE_ALL,
+);
+
+our @MOVE_TYPE = qw(all walk flying fly_low fly_high swim boat);
+
+{
+   package Crossfire::MoveType;
+
+   use overload
+      '='  => sub { bless [@{$_[0]}], ref $_[0] },
+      '""' => \&as_string,
+      '>=' => sub { $_[0][0] & $MOVE_TYPE{$_[1]} ? $_[0][1] & $MOVE_TYPE{$_[1]} : undef },
+      '+=' => sub { $_[0][0] |= $MOVE_TYPE{$_[1]}; $_[0][1] |=  $MOVE_TYPE{$_[1]}; &normalise },
+      '-=' => sub { $_[0][0] |= $MOVE_TYPE{$_[1]}; $_[0][1] &= ~$MOVE_TYPE{$_[1]}; &normalise },
+      '/=' => sub { $_[0][0] &= ~$MOVE_TYPE{$_[1]}; &normalise },
+      'x=' => sub {
+         my $cur = $_[0] >= $_[1];
+         if (!defined $cur) {
+            if ($_[0] >= "all") {
+               $_[0] -= $_[1];
+            } else {
+               $_[0] += $_[1];
+            }
+         } elsif ($cur) {
+            $_[0] -= $_[1];
+         } else {
+            $_[0] /= $_[1];
+         }
+
+         $_[0]
+      },
+      'eq' => sub { "$_[0]" eq "$_[1]" },
+      'ne' => sub { "$_[0]" ne "$_[1]" },
+   ;
+}
+
+sub Crossfire::MoveType::new {
+   my ($class, $string) = @_;
+
+   my $mask;
+   my $value;
+
+   if ($string =~ /^\s*\d+\s*$/) {
+      $mask = MOVE_ALL;
+      $value = $string+0;
+   } else {
+      for (split /\s+/, lc $string) {
+         if (s/^-//) {
+            $mask  |=  $MOVE_TYPE{$_};
+            $value &= ~$MOVE_TYPE{$_};
+         } else {
+            $mask  |=  $MOVE_TYPE{$_};
+            $value |=  $MOVE_TYPE{$_};
+         }
+      }
+   }
+
+   (bless [$mask, $value], $class)->normalise
+}
+
+sub Crossfire::MoveType::normalise {
+   my ($self) = @_;
+
+   if ($self->[0] & MOVE_ALL) {
+      my $mask = ~(($self->[1] & MOVE_ALL ? $self->[1] : ~$self->[1]) & $self->[0] & ~MOVE_ALL);
+      $self->[0] &= $mask;
+      $self->[1] &= $mask;
+   }
+
+   $self->[1] &= $self->[0];
+
+   $self
+}
+
+sub Crossfire::MoveType::as_string {
+   my ($self) = @_;
+
+   my @res;
+
+   my ($mask, $value) = @$self;
+
+   for (@Crossfire::MOVE_TYPE) {
+      my $bit = $Crossfire::MOVE_TYPE{$_};
+      if (($mask & $bit) == $bit && (($value & $bit) == $bit || ($value & $bit) == 0)) {
+         $mask &= ~$bit;
+         push @res, $value & $bit ? $_ : "-$_";
+      }
+   }
+
+   join " ", @res
+}
 
 sub load_ref($) {
    my ($path) = @_;
@@ -201,9 +300,59 @@ sub _add_resist($$$) {
    }
 }
 
+my %MATERIAL = reverse
+ paper      =>    1,
+ iron       =>    2,
+ glass      =>    4,
+ leather    =>    8,
+ wood       =>   16,
+ organic    =>   32,
+ stone      =>   64,
+ cloth      =>  128,
+ adamant    =>  256,
+ liquid     =>  512,
+ tin        => 1024,
+ bone       => 2048,
+ ice        => 4096,
+
+ # guesses
+ runestone  =>   12,
+ bronze     =>   18,
+ "ancient wood" => 20,
+ glass      =>   36,
+ marble     =>   66,
+ ice        =>   68,
+ stone      =>   70,
+ stone      =>   80,
+ cloth      =>  136,
+ ironwood   =>  144,
+ adamantium =>  258,
+ glacium    =>  260,
+ blood      =>  544,
+;
+
 # object as in "Object xxx", i.e. archetypes
 sub normalize_object($) {
    my ($ob) = @_;
+
+   # convert material bitset to materialname, if possible
+   if (exists $ob->{material}) {
+      if (!$ob->{material}) {
+         delete $ob->{material};
+      } elsif (exists $ob->{materialname}) {
+         if ($MATERIAL{$ob->{material}} eq $ob->{materialname}) {
+            delete $ob->{material};
+         } else {
+            warn "object $ob->{_name} has both materialname ($ob->{materialname}) and material ($ob->{material}) set.\n";
+            delete $ob->{material}; # assume materilname is more specific and nuke material
+         }
+      } elsif (my $name = $MATERIAL{$ob->{material}}) {
+         delete $ob->{material};
+         $ob->{materialname} = $name;
+      } else {
+         warn "object $ob->{_name} has unknown material ($ob->{material}) set.\n";
+      }
+   }
 
    # nuke outdated or never supported fields
    delete @$ob{qw(
@@ -219,66 +368,31 @@ sub normalize_object($) {
    for my $attr (keys %FIELD_MOVEMENT) {
       next unless exists $ob->{$attr};
 
-      $ob->{$attr} = MOVE_ALL if $ob->{$attr} == 255; #d# compatibility
-
-      next if $ob->{$attr} =~ /^\d+$/;
-
-      my $flags = 0;
-
-      # assume list
-      for my $flag (map lc, split /\s+/, $ob->{$attr}) {
-         $flags |=  MOVE_WALK     if $flag eq "walk";
-         $flags |=  MOVE_FLY_LOW  if $flag eq "fly_low";
-         $flags |=  MOVE_FLY_HIGH if $flag eq "fly_high";
-         $flags |=  MOVE_FLYING   if $flag eq "flying";
-         $flags |=  MOVE_SWIM     if $flag eq "swim";
-         $flags |=  MOVE_BOAT     if $flag eq "boat";
-         $flags |=  MOVE_ALL      if $flag eq "all";
-
-         $flags &= ~MOVE_WALK     if $flag eq "-walk";
-         $flags &= ~MOVE_FLY_LOW  if $flag eq "-fly_low";
-         $flags &= ~MOVE_FLY_HIGH if $flag eq "-fly_high";
-         $flags &= ~MOVE_FLYING   if $flag eq "-flying";
-         $flags &= ~MOVE_SWIM     if $flag eq "-swim";
-         $flags &= ~MOVE_BOAT     if $flag eq "-boat";
-         $flags &= ~MOVE_ALL      if $flag eq "-all";
-      }
-
-      $ob->{$attr} = $flags;
+      $ob->{$attr} = new Crossfire::MoveType $ob->{$attr};
    }
 
    # convert outdated movement flags to new movement sets
    if (defined (my $v = delete $ob->{no_pass})) {
-      $ob->{move_block} = $v ? MOVE_ALL : 0;
+      $ob->{move_block} = new Crossfire::MoveType $v ? "all" : "";
    }
    if (defined (my $v = delete $ob->{slow_move})) {
-      $ob->{move_slow} |= MOVE_WALK;
+      $ob->{move_slow} += "walk";
       $ob->{move_slow_penalty} = $v;
    }
    if (defined (my $v = delete $ob->{walk_on})) {
-      $ob->{move_on} = MOVE_ALL unless exists $ob->{move_on};
-      $ob->{move_on} = $v ? $ob->{move_on} | MOVE_WALK
-                          : $ob->{move_on} & ~MOVE_WALK;
+      $ob->{move_on}   ||= new Crossfire::MoveType; if ($v) { $ob->{move_on}  += "walk"     } else { $ob->{move_on}   -= "walk"    }
    }
    if (defined (my $v = delete $ob->{walk_off})) {
-      $ob->{move_off} = MOVE_ALL unless exists $ob->{move_off};
-      $ob->{move_off} = $v ? $ob->{move_off} | MOVE_WALK
-                           : $ob->{move_off} & ~MOVE_WALK;
+      $ob->{move_off}  ||= new Crossfire::MoveType; if ($v) { $ob->{move_off}  += "walk"    } else { $ob->{move_off}  -= "walk"    }
    }
    if (defined (my $v = delete $ob->{fly_on})) {
-      $ob->{move_on} = MOVE_ALL unless exists $ob->{move_on};
-      $ob->{move_on} = $v ? $ob->{move_on} | MOVE_FLY_LOW
-                          : $ob->{move_on} & ~MOVE_FLY_LOW;
+      $ob->{move_on}   ||= new Crossfire::MoveType; if ($v) { $ob->{move_on}   += "fly_low" } else { $ob->{move_on}   -= "fly_low" }
    }
    if (defined (my $v = delete $ob->{fly_off})) {
-      $ob->{move_off} = MOVE_ALL unless exists $ob->{move_off};
-      $ob->{move_off} = $v ? $ob->{move_off} | MOVE_FLY_LOW
-                           : $ob->{move_off} & ~MOVE_FLY_LOW;
+      $ob->{move_off}  ||= new Crossfire::MoveType; if ($v) { $ob->{move_off}  += "fly_low" } else { $ob->{move_off}  -= "fly_low" }
    }
    if (defined (my $v = delete $ob->{flying})) {
-      $ob->{move_type} = MOVE_ALL unless exists $ob->{move_type};
-      $ob->{move_type} = $v ? $ob->{move_type} | MOVE_FLY_LOW
-                            : $ob->{move_type} & ~MOVE_FLY_LOW;
+      $ob->{move_type} ||= new Crossfire::MoveType; if ($v) { $ob->{move_type} += "fly_low" } else { $ob->{move_type} -= "fly_low" }
    }
 
    # convert idiotic event_xxx things into objects
@@ -386,6 +500,7 @@ sub read_arch($;$) {
 
    my %arc;
    my ($more, $prev);
+   my $comment;
 
    open my $fh, "<:raw:perlio:utf8", $path
       or Carp::croak "$path: $!";
@@ -399,8 +514,10 @@ sub read_arch($;$) {
          s/\s+$//;
          if (/^end$/i) {
             last;
+
          } elsif (/^arch (\S+)$/i) {
             push @{ $arc{inventory} }, attr_thaw normalize_arch $parse_block->(_name => $1);
+
          } elsif (/^lore$/i) {
             while (<$fh>) {
                last if /^endlore\s*$/i;
@@ -419,7 +536,10 @@ sub read_arch($;$) {
             }
          } elsif (/^(\S+)\s*(.*)$/) {
             $arc{lc $1} = $2;
-         } elsif (/^\s*($|#)/) {
+         } elsif (/^\s*#/) {
+            $arc{_comment} .= "$_\n";
+
+         } elsif (/^\s*$/) {
             #
          } else {
             warn "$path: unparsable line '$_' in arch $arc{_name}";
@@ -435,7 +555,9 @@ sub read_arch($;$) {
          $more = $prev;
       } elsif (/^object (\S+)$/i) {
          my $name = $1;
-         my $arc = attr_thaw normalize_object $parse_block->(_name => $name);
+         my $arc = attr_thaw normalize_object $parse_block->(_name => $name, _comment => $comment);
+         undef $comment;
+         delete $arc{_comment} unless length $arc{_comment};
          $arc->{_atype} = 'object';
 
          if ($more) {
@@ -447,7 +569,9 @@ sub read_arch($;$) {
          $more = undef;
       } elsif (/^arch (\S+)$/i) {
          my $name = $1;
-         my $arc = attr_thaw normalize_arch $parse_block->(_name => $name);
+         my $arc = attr_thaw normalize_arch $parse_block->(_name => $name, _comment => $comment);
+         undef $comment;
+         delete $arc{_comment} unless length $arc{_comment};
          $arc->{_atype} = 'arch';
 
          if ($more) {
@@ -466,6 +590,8 @@ sub read_arch($;$) {
          } else {
             $toplevel->{$1} = $2;
          }
+      } elsif (/^\s*#/) {
+         $comment .= "$_\n";
       } elsif (/^\s*($|#)/) {
          #
       } else {
@@ -495,11 +621,22 @@ sub archlist_to_string {
                              | (delete $a{attack_movement_bits_4_7});
       }
 
+      if (my $comment = delete $a{_comment}) {
+         if ($comment =~ /[^\n\s#]/) {
+            $str .= $comment;
+         }
+      }
+
       $str .= ((exists $a{_atype}) ? $a{_atype} : 'arch'). " $a{_name}\n";
 
-      my $inv = delete $a{inventory};
+      my $inv  = delete $a{inventory};
       my $more = delete $a{more}; # arches do not support 'more', but old maps can contain some
       my $anim = delete $a{anim};
+
+      if ($a{_atype} eq 'object') {
+         $str .= join "\n", "anim", @$anim, "mina\n"
+            if $anim;
+      }
 
       my @kv;
 
@@ -521,32 +658,6 @@ sub archlist_to_string {
          if (my $end = $Crossfire::FIELD_MULTILINE{$k}) {
             $v =~ s/\n$//;
             $str .= "$k\n$v\n$end\n";
-         } elsif (exists $Crossfire::FIELD_MOVEMENT{$k}) {
-            if ($v & ~Crossfire::MOVE_ALL or !$v) {
-               $str .= "$k $v\n";
-
-            } elsif ($v & Crossfire::MOVE_ALLBIT) {
-               $str .= "$k all";
-
-               $str .= " -walk"     unless $v & Crossfire::MOVE_WALK;
-               $str .= " -fly_low"  unless $v & Crossfire::MOVE_FLY_LOW;
-               $str .= " -fly_high" unless $v & Crossfire::MOVE_FLY_HIGH;
-               $str .= " -swim"     unless $v & Crossfire::MOVE_SWIM;
-               $str .= " -boat"     unless $v & Crossfire::MOVE_BOAT;
-
-               $str .= "\n";
-
-            } else {
-               $str .= $k;
-
-               $str .= " walk"     if $v & Crossfire::MOVE_WALK;
-               $str .= " fly_low"  if $v & Crossfire::MOVE_FLY_LOW;
-               $str .= " fly_high" if $v & Crossfire::MOVE_FLY_HIGH;
-               $str .= " swim"     if $v & Crossfire::MOVE_SWIM;
-               $str .= " boat"     if $v & Crossfire::MOVE_BOAT;
-
-               $str .= "\n";
-            }
          } else {
             $str .= "$k $v\n";
          }
@@ -556,16 +667,15 @@ sub archlist_to_string {
          $append->($_) for @$inv;
       }
 
-      if ($a{_atype} eq 'object') {
-         $str .= join "\n", "anim", @$anim, "mina\n"
-            if $anim;
-      }
-
       $str .= "end\n";
 
-      if (($a{_atype} eq 'object') && $more) {
-         $str .= "\nmore\n";
-         $append->($more) if $more;
+      if ($a{_atype} eq 'object') {
+         if ($more) {
+            $str .= "more\n";
+            $append->($more) if $more;
+         } else {
+            $str .= "\n";
+         }
       }
    };
 
@@ -723,67 +833,6 @@ sub arch_attr($) {
    ];
 
    $attr
-}
-
-sub arch_edit_sections {
-#      if (edit_type == IGUIConstants.TILE_EDIT_NONE)
-#           edit_type = 0;
-#       else if (edit_type != 0) {
-#           // all flags from 'check_type' must be unset in this arch because they get recalculated now
-#           edit_type &= ~check_type;
-#       }
-#
-#       }
-#       if ((check_type & IGUIConstants.TILE_EDIT_MONSTER) != 0 &&
-#           getAttributeValue("alive", defarch) == 1 &&
-#           (getAttributeValue("monster", defarch) == 1 ||
-#           getAttributeValue("generator", defarch) == 1)) {
-#           // Monster: monsters/npcs/generators
-#           edit_type |= IGUIConstants.TILE_EDIT_MONSTER;
-#       }
-#       if ((check_type & IGUIConstants.TILE_EDIT_WALL) != 0 &&
-#           arch_type == 0 && getAttributeValue("no_pass", defarch) == 1) {
-#           // Walls
-#           edit_type |= IGUIConstants.TILE_EDIT_WALL;
-#       }
-#       if ((check_type & IGUIConstants.TILE_EDIT_CONNECTED) != 0 &&
-#           getAttributeValue("connected", defarch) != 0) {
-#           // Connected Objects
-#           edit_type |= IGUIConstants.TILE_EDIT_CONNECTED;
-#       }
-#       if ((check_type & IGUIConstants.TILE_EDIT_EXIT) != 0 &&
-#           arch_type == 66 || arch_type == 41 || arch_type == 95) {
-#           // Exit: teleporter/exit/trapdoors
-#           edit_type |= IGUIConstants.TILE_EDIT_EXIT;
-#       }
-#       if ((check_type & IGUIConstants.TILE_EDIT_TREASURE) != 0 &&
-#           getAttributeValue("no_pick", defarch) == 0 && (arch_type == 4 ||
-#           arch_type == 5 || arch_type == 36 || arch_type == 60 ||
-#           arch_type == 85 || arch_type == 111 || arch_type == 123 ||
-#           arch_type == 124 || arch_type == 130)) {
-#           // Treasure: randomtreasure/money/gems/potions/spellbooks/scrolls
-#           edit_type |= IGUIConstants.TILE_EDIT_TREASURE;
-#       }
-#       if ((check_type & IGUIConstants.TILE_EDIT_DOOR) != 0 &&
-#           arch_type == 20 || arch_type == 23 || arch_type == 26 ||
-#           arch_type == 91 || arch_type == 21 || arch_type == 24) {
-#       // Door: door/special door/gates  + keys
-#       edit_type |= IGUIConstants.TILE_EDIT_DOOR;
-#       }
-#       if ((check_type & IGUIConstants.TILE_EDIT_EQUIP) != 0 &&
-#           getAttributeValue("no_pick", defarch) == 0 && ((arch_type >= 13 &&
-#           arch_type <= 16) || arch_type == 33 || arch_type == 34 ||
-#           arch_type == 35 || arch_type == 39 || arch_type == 70 ||
-#           arch_type == 87 || arch_type == 99 || arch_type == 100 ||
-#           arch_type == 104 || arch_type == 109 || arch_type == 113 ||
-#           arch_type == 122 || arch_type == 3)) {
-#           // Equipment: weapons/armour/wands/rods
-#           edit_type |= IGUIConstants.TILE_EDIT_EQUIP;
-#       }
-#
-#       return(edit_type);
-#
-#  
 }
 
 sub cache_file($$&&) {

@@ -493,8 +493,7 @@ our %TYPE = (
 	{
 	  desc => 'Which movement types automatically (as opposed to manually) activate this object.',
 	  name => 'movement type',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -607,8 +606,7 @@ our %TYPE = (
 	{
 	  desc => 'Which movement types automatically (as opposed to manually) activate this object.',
 	  name => 'movement type',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -1013,8 +1011,7 @@ our %TYPE = (
 	    {
 	      desc => 'Determines which kinds of movement this object can use (e.g. for monsters) or grants (e.g. for amulets).',
 	      name => 'movement type',
-	      type => 'bitmask',
-	      value => $BITMASK{movement_type}
+	      type => 'movement_type'
 	    }
 	  ],
 	  [
@@ -1221,8 +1218,7 @@ our %TYPE = (
 	{
 	  desc => 'Which movement types automatically (as opposed to manually) activate this object.',
 	  name => 'movement type',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -1230,8 +1226,7 @@ our %TYPE = (
 	{
 	  desc => 'Which movement types deactivate this object (e.g. button).',
 	  name => 'movement type',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -1701,8 +1696,7 @@ our %TYPE = (
 	{
 	  desc => 'Which movement types automatically (as opposed to manually) activate this object.',
 	  name => 'movement type',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ]
     ],
@@ -1986,8 +1980,7 @@ our %TYPE = (
 	{
 	  desc => 'Objects using these movement types cannot move over this space.',
 	  name => 'blocked movement',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -1995,8 +1988,7 @@ our %TYPE = (
 	{
 	  desc => 'Objects using these movement types are allowed to move over this space. Takes precedence over \'blocked movements\'.',
 	  name => 'allowed movement',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -2004,8 +1996,7 @@ our %TYPE = (
 	{
 	  desc => 'The types of movement that should by slowed down by the \'slow movement penalty\'.',
 	  name => 'slowed movement',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -2175,8 +2166,7 @@ our %TYPE = (
 	{
 	  desc => 'Which movement types automatically (as opposed to manually) activate this object.',
 	  name => 'movement type',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -2459,8 +2449,7 @@ our %TYPE = (
 	    {
 	      desc => 'Objects using these movement types cannot move over this space.',
 	      name => 'blocked movement',
-	      type => 'bitmask',
-	      value => $BITMASK{movement_type}
+	      type => 'movement_type'
 	    }
 	  ],
 	  [
@@ -2468,8 +2457,7 @@ our %TYPE = (
 	    {
 	      desc => 'Objects using these movement types are allowed to move over this space. Takes precedence over \'blocked movements\'.',
 	      name => 'allowed movement',
-	      type => 'bitmask',
-	      value => $BITMASK{movement_type}
+	      type => 'movement_type'
 	    }
 	  ],
 	  [
@@ -2477,8 +2465,7 @@ our %TYPE = (
 	    {
 	      desc => 'The types of movement that should by slowed down by the \'slow movement penalty\'.',
 	      name => 'slowed movement',
-	      type => 'bitmask',
-	      value => $BITMASK{movement_type}
+	      type => 'movement_type'
 	    }
 	  ],
 	  [
@@ -2573,8 +2560,7 @@ our %TYPE = (
 	    {
 	      desc => 'Objects using these movement types cannot move over this space.',
 	      name => 'blocked movement',
-	      type => 'bitmask',
-	      value => $BITMASK{movement_type}
+	      type => 'movement_type'
 	    }
 	  ],
 	  [
@@ -2582,8 +2568,7 @@ our %TYPE = (
 	    {
 	      desc => 'Objects using these movement types are allowed to move over this space. Takes precedence over \'blocked movements\'.',
 	      name => 'allowed movement',
-	      type => 'bitmask',
-	      value => $BITMASK{movement_type}
+	      type => 'movement_type'
 	    }
 	  ],
 	  [
@@ -2591,8 +2576,7 @@ our %TYPE = (
 	    {
 	      desc => 'The types of movement that should by slowed down by the \'slow movement penalty\'.',
 	      name => 'slowed movement',
-	      type => 'bitmask',
-	      value => $BITMASK{movement_type}
+	      type => 'movement_type'
 	    }
 	  ],
 	  [
@@ -2682,8 +2666,7 @@ our %TYPE = (
 	{
 	  desc => 'Objects using these movement types cannot move over this space.',
 	  name => 'blocked movement',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -2691,8 +2674,7 @@ our %TYPE = (
 	{
 	  desc => 'Objects using these movement types are allowed to move over this space. Takes precedence over \'blocked movements\'.',
 	  name => 'allowed movement',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -2700,8 +2682,7 @@ our %TYPE = (
 	{
 	  desc => 'The types of movement that should by slowed down by the \'slow movement penalty\'.',
 	  name => 'slowed movement',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -2838,8 +2819,7 @@ our %TYPE = (
 	{
 	  desc => 'Which movement types automatically (as opposed to manually) activate this object.',
 	  name => 'movement type',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -2921,8 +2901,7 @@ our %TYPE = (
 	    {
 	      desc => 'Objects using these movement types cannot move over this space.',
 	      name => 'blocked movement',
-	      type => 'bitmask',
-	      value => $BITMASK{movement_type}
+	      type => 'movement_type'
 	    }
 	  ],
 	  [
@@ -2930,8 +2909,7 @@ our %TYPE = (
 	    {
 	      desc => 'Objects using these movement types are allowed to move over this space. Takes precedence over \'blocked movements\'.',
 	      name => 'allowed movement',
-	      type => 'bitmask',
-	      value => $BITMASK{movement_type}
+	      type => 'movement_type'
 	    }
 	  ],
 	  [
@@ -2939,8 +2917,7 @@ our %TYPE = (
 	    {
 	      desc => 'The types of movement that should by slowed down by the \'slow movement penalty\'.',
 	      name => 'slowed movement',
-	      type => 'bitmask',
-	      value => $BITMASK{movement_type}
+	      type => 'movement_type'
 	    }
 	  ],
 	  [
@@ -3239,8 +3216,7 @@ our %TYPE = (
 	{
 	  desc => 'Objects using these movement types cannot move over this space.',
 	  name => 'blocked movement',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -3248,8 +3224,7 @@ our %TYPE = (
 	{
 	  desc => 'Objects using these movement types are allowed to move over this space. Takes precedence over \'blocked movements\'.',
 	  name => 'allowed movement',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -3257,8 +3232,7 @@ our %TYPE = (
 	{
 	  desc => 'The types of movement that should by slowed down by the \'slow movement penalty\'.',
 	  name => 'slowed movement',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -3524,8 +3498,7 @@ our %TYPE = (
 	{
 	  desc => 'Objects using these movement types cannot move over this space.',
 	  name => 'blocked movement',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -3533,8 +3506,7 @@ our %TYPE = (
 	{
 	  desc => 'Objects using these movement types are allowed to move over this space. Takes precedence over \'blocked movements\'.',
 	  name => 'allowed movement',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -3542,8 +3514,7 @@ our %TYPE = (
 	{
 	  desc => 'The types of movement that should by slowed down by the \'slow movement penalty\'.',
 	  name => 'slowed movement',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -3834,8 +3805,7 @@ our %TYPE = (
 	{
 	  desc => 'Objects using these movement types cannot move over this space.',
 	  name => 'blocked movement',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -3843,8 +3813,7 @@ our %TYPE = (
 	{
 	  desc => 'Objects using these movement types are allowed to move over this space. Takes precedence over \'blocked movements\'.',
 	  name => 'allowed movement',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -3852,8 +3821,7 @@ our %TYPE = (
 	{
 	  desc => 'The types of movement that should by slowed down by the \'slow movement penalty\'.',
 	  name => 'slowed movement',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -4010,8 +3978,7 @@ our %TYPE = (
 	{
 	  desc => 'Determines which kinds of movement this object can use (e.g. for monsters) or grants (e.g. for amulets).',
 	  name => 'movement type',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -4751,8 +4718,7 @@ our %TYPE = (
 	{
 	  desc => 'Which movement types automatically (as opposed to manually) activate this object.',
 	  name => 'movement type',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ]
     ],
@@ -4825,8 +4791,7 @@ our %TYPE = (
 	{
 	  desc => 'Which movement types automatically (as opposed to manually) activate this object.',
 	  name => 'movement type',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ]
     ],
@@ -5253,8 +5218,7 @@ our %TYPE = (
 	{
 	  desc => 'Which movement types automatically (as opposed to manually) activate this object.',
 	  name => 'movement type',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -5734,8 +5698,7 @@ our %TYPE = (
 	{
 	  desc => 'Which movement types automatically (as opposed to manually) activate this object.',
 	  name => 'movement type',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ]
     ],
@@ -5777,8 +5740,7 @@ our %TYPE = (
 	{
 	  desc => 'Which movement types automatically (as opposed to manually) activate this object.',
 	  name => 'movement type',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -6095,8 +6057,7 @@ our %TYPE = (
 	{
 	  desc => 'Which movement types automatically (as opposed to manually) activate this object.',
 	  name => 'movement type',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ]
     ],
@@ -6144,8 +6105,7 @@ our %TYPE = (
 	{
 	  desc => 'Which movement types automatically (as opposed to manually) activate this object.',
 	  name => 'movement type',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -6153,8 +6113,7 @@ our %TYPE = (
 	{
 	  desc => 'Objects using these movement types cannot move over this space.',
 	  name => 'blocked movement',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -6162,8 +6121,7 @@ our %TYPE = (
 	{
 	  desc => 'Objects using these movement types are allowed to move over this space. Takes precedence over \'blocked movements\'.',
 	  name => 'allowed movement',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -6171,8 +6129,7 @@ our %TYPE = (
 	{
 	  desc => 'The types of movement that should by slowed down by the \'slow movement penalty\'.',
 	  name => 'slowed movement',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -6326,8 +6283,7 @@ our %TYPE = (
 	{
 	  desc => 'Objects using these movement types cannot move over this space.',
 	  name => 'blocked movement',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -6335,8 +6291,7 @@ our %TYPE = (
 	{
 	  desc => 'Objects using these movement types are allowed to move over this space. Takes precedence over \'blocked movements\'.',
 	  name => 'allowed movement',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -6344,8 +6299,7 @@ our %TYPE = (
 	{
 	  desc => 'The types of movement that should by slowed down by the \'slow movement penalty\'.',
 	  name => 'slowed movement',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -6402,8 +6356,7 @@ our %TYPE = (
 	{
 	  desc => 'Which movement types automatically (as opposed to manually) activate this object.',
 	  name => 'movement type',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -6492,8 +6445,7 @@ our %TYPE = (
 	{
 	  desc => 'Which movement types automatically (as opposed to manually) activate this object.',
 	  name => 'movement type',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -6640,8 +6592,7 @@ our %TYPE = (
 	{
 	  desc => 'Objects using these movement types cannot move over this space.',
 	  name => 'blocked movement',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -6649,8 +6600,7 @@ our %TYPE = (
 	{
 	  desc => 'Objects using these movement types are allowed to move over this space. Takes precedence over \'blocked movements\'.',
 	  name => 'allowed movement',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
@@ -6658,8 +6608,7 @@ our %TYPE = (
 	{
 	  desc => 'The types of movement that should by slowed down by the \'slow movement penalty\'.',
 	  name => 'slowed movement',
-	  type => 'bitmask',
-	  value => $BITMASK{movement_type}
+	  type => 'movement_type'
 	}
       ],
       [
