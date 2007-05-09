@@ -1765,6 +1765,10 @@
   <attribute arch="randomitems" editor="treasurelist" type="treasurelist">
     This entry determines what kind of traps will appear in the door.
   </attribute>
+  <attribute arch="treasure_env" editor="treasure in env" type="bool">
+    Set this flag to move treasure items created into the environment (map)
+    instead of putting them into the object.
+  </attribute>
 </type>
 
 <!--####################################################################-->
@@ -2967,6 +2971,10 @@
     inventory. Those will drop-at-kill just like the stuff
     from the &lt;treasurelist&gt;.
   </attribute>
+  <attribute arch="treasure_env" editor="treasure in env" type="bool">
+    Set this flag to move treasure items created into the environment (map)
+    instead of putting them into the object.
+  </attribute>
   <attribute arch="level" editor="level" type="int">
     A monster's &lt;level&gt; is the most important attribute.
     &lt;level&gt; affects the power of a monster in various ways.
@@ -3022,6 +3030,12 @@
     If a monster has something in the inventory, this
     value can be set to reflect the slowdown due to
     the carried weight.
+  </attribute>
+  <attribute arch="precious" editor="precious" type="bool">
+    Set this flag to indicate that this monster is <i>precious</i>, i.e.
+    it should not be lightly destroyed. This is most useful on pets and
+    keeps the server from destroying them on destroy_pets/monster floors
+    and will try to save them when the player logs out.
   </attribute>
 
 <section name="melee">
@@ -4301,6 +4315,20 @@
   </attribute>
   <attribute arch_begin="msg" arch_end="endmsg" editor="message" type="text">
     This text will be displayed to the player.
+  </attribute>
+</type>
+
+<type number="150" name="Shop Inventory">
+  <ignore>
+    <ignore_list name="non_pickable" />
+  </ignore>
+  <description><![CDATA[The purpose of a sign is to display the contents of a shop.]]>
+  </description>
+  <use><![CDATA[Use these signs to present the player a list of the items in the shop]]>
+  </use>
+  <attribute arch="shop_coords" editor="shop rectangle" type="string">
+     The format of this field is: 'x1,y1,x2,y2'. It defines a rectangle on
+     the map that will be searched for unpaid items.
   </attribute>
 </type>
 

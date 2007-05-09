@@ -2038,6 +2038,14 @@ our %TYPE = (
 	  name => 'treasurelist',
 	  type => 'treasurelist'
 	}
+      ],
+      [
+	'treasure_env',
+	{
+	  desc => 'Set this flag to move treasure items created into the environment (map) instead of putting them into the object.',
+	  name => 'treasure in env',
+	  type => 'bool'
+	}
       ]
     ],
     desc => 'A door can be opened with a normal key. It also can be broken by attacking it, and it can be defeated with the lockpicking skill. If a door is defeated, horizontally and vertically adjacent doors are automatically removed.',
@@ -3910,6 +3918,14 @@ our %TYPE = (
 	}
       ],
       [
+	'treasure_env',
+	{
+	  desc => 'Set this flag to move treasure items created into the environment (map) instead of putting them into the object.',
+	  name => 'treasure in env',
+	  type => 'bool'
+	}
+      ],
+      [
 	'level',
 	{
 	  desc => 'A monster\'s <level> is the most important attribute. <level> affects the power of a monster in various ways.',
@@ -3995,6 +4011,14 @@ our %TYPE = (
 	  desc => 'If a monster has something in the inventory, this value can be set to reflect the slowdown due to the carried weight.',
 	  name => 'carries weight',
 	  type => 'int'
+	}
+      ],
+      [
+	'precious',
+	{
+	  desc => 'Set this flag to indicate that this monster is XML::Grove::Element=HASH(0xa213c0), i.e. it should not be lightly destroyed. This is most useful on pets and keeps the server from destroying them on destroy_pets/monster floors and will try to save them when the player logs out.',
+	  name => 'precious',
+	  type => 'bool'
 	}
       ],
       [
@@ -5683,6 +5707,24 @@ our %TYPE = (
     ],
     name => 'Shop Floor',
     use => 'Tile your whole shop-interior space which shop floor. (That assures players receive payment for dropping items). Place shop mats to enter/leave the shop, and make sure there is no other exit than the shop mat.'
+  },
+  'Shop Inventory' => {
+    attr => [
+      [
+	'shop_coords',
+	{
+	  desc => 'The format of this field is: \'x1,y1,x2,y2\'. It defines a rectangle on the map that will be searched for unpaid items.',
+	  name => 'shop rectangle',
+	  type => 'string'
+	}
+      ]
+    ],
+    desc => 'The purpose of a sign is to display the contents of a shop.',
+    ignore => [
+      $IGNORE_LIST{non_pickable}
+    ],
+    name => 'Shop Inventory',
+    use => 'Use these signs to present the player a list of the items in the shop'
   },
   'Shop Mat' => {
     attr => [
@@ -7459,6 +7501,7 @@ our %ATTR = (
   122 => $TYPE{Container},
   130 => $TYPE{'Skill Scroll'},
   138 => $TYPE{Swamp},
+  150 => $TYPE{'Shop Inventory'},
   154 => $TYPE{Rune},
   155 => $TYPE{Trap},
   156 => $TYPE{'Power Crystal'},

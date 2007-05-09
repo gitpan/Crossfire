@@ -16,7 +16,7 @@ Base class to implement a crossfire client.
 
 package Crossfire::Protocol::Base;
 
-our $VERSION = '0.95';
+our $VERSION = '0.98';
 
 use strict;
 
@@ -25,17 +25,7 @@ use IO::Socket::INET;
 
 use Crossfire::Protocol::Constants;
 
-use JSON::Syck (); #TODO#d# replace by JSON::PC when it becomes available == working
-
-sub from_json($) {
-   $JSON::Syck::ImplicitUnicode = 1;
-   JSON::Syck::Load $_[0]
-}
-
-sub to_json($) {
-   $JSON::Syck::ImplicitUnicode = 0;
-   JSON::Syck::Dump $_[0]
-}
+use JSON::XS qw(from_json to_json);
 
 =item new Crossfire::Protocol::Base host => ..., port => ...
 
@@ -52,6 +42,7 @@ sub new {
       token           => "a0",
       ncom            => [0..255],
       client          => "Crossfire Perl Module $VERSION $] $^O $0",
+      tilesize        => 32,
       @_
    }, $class;
 
@@ -76,7 +67,7 @@ sub new {
       }
    });
 
-   $self->{setup_req} = {
+   $self->{setup} = {
       sound             => 1,
       exp64             => 1,
       map1acmd          => 1,
@@ -88,11 +79,21 @@ sub new {
       extcmd            => 1,
       extendedTextInfos => 1,
       spellmon          => 1,
+      fxix              => 1,
+      excmd             => 1,
+      msg               => 1,
       %{$self->{setup_req} || {} },
    };
 
    $self->send ("version 1023 1027 $self->{client}");
-   $self->send_setup;
+
+   # send initial setup req
+   ++$self->{setup_outstanding};
+   $self->send (join " ", "setup",
+      %{$self->{setup}},
+      mapsize => "$self->{mapw}x$self->{maph}",
+   );
+
    $self->send ("requestinfo skill_info");
    $self->send ("requestinfo spell_paths");
 
@@ -106,14 +107,13 @@ sub token {
 sub feed {
    my ($self, $data) = @_;
 
-   $data =~ s/^(\S+)(?:\s|$)//
+   $data =~ s/^([^ ]+)(?: |$)//
       or return;
 
-   eval {
-      my $command = "feed_$1";
+   my $cb = $self->can ("feed_$1")
+      or return; # ignore unknown commands
 
-      $self->$command ($data);
-   };
+   $cb->($self, $data);
 
    warn $@ if $@;
 }
@@ -138,6 +138,14 @@ sub feed_version {
 
 =over 4
 
+=item $self->setup_req (key => value)
+
+Send a setup request for the given setting.
+
+=item $self->setup_chk ($changed_setup)
+
+Called when a setup reply is received from the server.
+
 =item $self->setup ($setup)
 
 Called after the last setup packet has been received, just before an addme
@@ -147,16 +155,19 @@ request is sent.
 
 sub setup { }
 
-sub feed_setup {
-   my ($self, $data) = @_;
+sub setup_req {
+   my ($self, $k, $v) = @_;
 
-   $data =~ s/^ +//;
+   $self->{setup_req}{$k} = $v;
 
-   my $prev_setup = $self->{setup};
+   ++$self->{setup_outstanding};
+   $self->send ("setup $k $v");
+}
 
-   $self->{setup} = { split / +/, $data };
+sub setup_chk {
+   my ($self, $setup) = @_;
 
-   if ($self->{setup}{extendedTextInfos} > 0 && !$prev_setup) {
+   if ($setup->{extendedTextInfos} > 0) {
       $self->send ("toggleextendedtext 1"); # books
       $self->send ("toggleextendedtext 2"); # cards
       $self->send ("toggleextendedtext 3"); # papers
@@ -166,13 +177,42 @@ sub feed_setup {
       $self->send ("toggleextendedtext 7"); # motd
    }
 
-   my ($mapw, $maph) = split /x/, $self->{setup}{mapsize};
+   if (exists $setup->{smoothing}) {
+      $self->{smoothing} = $setup->{smoothing} > 0;
+   }
 
-   if ($mapw != $self->{mapw} || $maph != $self->{maph}) {
-      ($self->{mapw}, $self->{maph}) = ($mapw, $maph);
-      $self->send_setup;
-   } else {
+   if (exists $setup->{mapsize}) {
+      my ($mapw, $maph) = split /x/, $setup->{mapsize};
+
+      if ($mapw != $self->{mapw} || $maph != $self->{maph}) {
+         ($self->{mapw}, $self->{maph}) = ($mapw, $maph);
+
+         # 2.x servers do not suffer from the stupid
+         # mapsize-returns-two-things semantics anymore
+         $self->setup_req (mapsize => "$self->{mapw}x$self->{maph}")
+            unless $self->{setup}{extcmd} > 0;
+      }
+   }
+}
+
+sub feed_setup {
+   my ($self, $data) = @_;
+
+   $data =~ s/^ +//;
+
+   my $changed = { split / +/, $data };
+
+   $self->{setup} = { %{ $self->{setup} }, %$changed };
+   $self->setup_chk ($changed);
+
+   unless (--$self->{setup_outstanding}) {
+      # done with negotiation
+
       $self->setup ($self->{setup});
+
+      # servers supporting exticmd do sensible bandwidth management
+      $self->{max_outstanding} = 512 if $self->{setup}{extcmd} > 0;
+
       $self->send ("addme");
       $self->feed_newmap;
    }
@@ -240,19 +280,57 @@ sub feed_face1 {
    $self->need_face ($num, $name, $chksum);
 }
 
+sub feed_fx {
+   my ($self, $data) = @_;
+
+   my @info = unpack "(w C/a)*", $data;
+   while (@info) {
+      my $chksum  = pop @info;
+      my $facenum = pop @info;
+
+      $self->need_face ($facenum, (unpack "H*", $chksum), 0);
+   }
+}
+
+=item $self->smooth_update ($facenum, $face)
+
+=cut
+
+sub smooth_update { }
+
+sub feed_sx {
+   my ($self, $data) = @_;
+
+   my @info = unpack "(w w w)*", $data;
+   while (@info) {
+      my $level   = pop @info;
+      my $smooth  = pop @info;
+      my $facenum = pop @info;
+
+
+      my $face = $self->{face}[$facenum];
+
+      $face->{smoothface}  = $smooth;
+      $face->{smoothlevel} = $level;
+
+      $self->smooth_update ($facenum, $face);
+   }
+}
+
 sub need_face {
    my ($self, $num, $name, $chksum) = @_;
 
-   return if $self->{face}[$num];
-
    my $face = $self->{face}[$num] = { name => $name, chksum => $chksum };
 
-   if (my $data = $self->face_find ($num, $face)) {
-      $face->{image} = $data;
-      $self->face_update ($num, $face, 0);
-   } else {
-      $self->send_queue ("askface $num");
-   }
+   $self->face_find ($num, $face, sub {
+      my ($data) = @_;
+      if (length $data) {
+         $face->{image} = $data;
+         $self->face_update ($num, $face, 0);
+      } else {
+         $self->send_queue ("askface $num");
+      }
+   });
 }
 
 =item $conn->anim_update ($num) [OVERWRITE]
@@ -314,13 +392,50 @@ sub feed_query {
 
 =item $conn->drawextinfo ($color, $type, $subtype, $message)
 
+default implementation calls msg
+
 =item $conn->drawinfo ($color, $text)
+
+default implementation calls msg
+
+=item $conn->msg ($default_color, $type, $text, @extra)
 
 =cut
 
-sub drawextinfo { }
+sub drawextinfo {
+   my ($self, $color, $type, $subtype, $message) = @_;
 
-sub drawinfo { }
+   for ($message) {
+      s/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g;
+
+      1 while s{ \[b\] (.*?) \[/b\] }{<b>$1</b>}igx;
+      1 while s{ \[i\] (.*?) \[/i\] }{<i>$1</i>}igx;
+      1 while s{ \[ul\](.*?) \[/ul\]}{<u>$1</u>}igx;
+      1 while s{ \[fixed\](.*?)\[/fixed\]}{<tt>$1</tt>}igx;
+      1 while s{ \[color=(.*?)\] (.*?) \[/color\]}{<span foreground='$1'>$2</span>}igx;
+
+      #TODO: arcance, hand, strange, print font tags
+      1 while s{ \[arcane\]  (.*?) \[/arcane\]  }{<i>$1</i>}igx;
+      1 while s{ \[hand\]    (.*?) \[/hand\]    }{<i>$1</i>}igx;
+      1 while s{ \[strange\] (.*?) \[/strange\] }{<i>$1</i>}igx;
+      1 while s{ \[print\]   (.*?) \[/print\]   }{$1}igx;
+
+   }
+
+   $self->msg ($color, $type, $message, $subtype);
+}
+
+sub drawinfo {
+   my ($self, $color, $text) = @_;
+
+   for ($text) {
+      s/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g;
+   }
+
+   $self->msg ($color, 0, $text);
+}
+
+sub msg { }
 
 sub feed_ExtendedTextSet {
    my ($self, $data) = @_;
@@ -329,9 +444,10 @@ sub feed_ExtendedTextSet {
 sub feed_drawextinfo {
    my ($self, $data) = @_;
 
-   my ($color, $type, $subtype, $message) = split /\s+/, $data, 4;
+   my ($color, $type, $subtype, $text) = split /\s+/, $data, 4;
 
-   $self->drawextinfo ($color, $type, $subtype, $message);
+   utf8::decode $text;
+   $self->drawextinfo ($color, $type, $subtype, $text);
 }
 
 sub feed_drawinfo {
@@ -342,6 +458,41 @@ sub feed_drawinfo {
    utf8::decode $text;
 
    $self->drawinfo ($flags, $text);
+}
+
+sub feed_msg {
+   my ($self, $data) = @_;
+
+   if ($data =~ /^\s*\[/) {
+      $self->msg (@{ from_json $data });
+   } else {
+      utf8::decode $data;
+      $self->msg (split /\s+/, $data, 3);
+   }
+}
+
+=item $conn->ex ($tag, $cb)
+
+=cut
+
+sub feed_ex {
+   my ($self, $data) = @_;
+
+   my ($tag, $text) = unpack "wa*", $data;
+
+   if (my $q = delete $self->{cb_ex}{$tag}) {
+      $_->($text, $tag) for @$q;
+   }
+}
+
+sub ex {
+   my ($self, $tag, $cb) = @_;
+
+   return unless $self->{setup}{excmd} > 0;
+
+   my $q = $self->{cb_ex}{$tag} ||= [];
+   push @$q, $cb;
+   $self->send ("ex $tag") if @$q == 1;
 }
 
 =item $conn->player_update ($player)
@@ -715,8 +866,24 @@ sub feed_image {
    $self->send_queue;
    $self->{face}[$num]{image} = $data;
    $self->face_update ($num, $self->{face}[$num], 1);
-
    $self->map_update;
+}
+
+sub feed_ix {
+   my ($self, $data) = @_;
+
+   my ($num, $ofs, $data) = unpack "w w a*", $data;
+
+   # void stupid substr out of range error
+   $self->{ix_recv_buf} = " " x $ofs unless exists $self->{ix_recv_buf};
+   substr $self->{ix_recv_buf}, $ofs, (length $data), $data;
+
+   unless ($ofs) {
+      $self->send_queue;
+      $self->{face}[$num]{image} = delete $self->{ix_recv_buf};
+      $self->face_update ($num, $self->{face}[$num], 1);
+      $self->map_update;
+   }
 }
 
 =item $conn->image_info ($numfaces, $chksum, [...image-sets])
@@ -729,9 +896,11 @@ sub feed_replyinfo {
    my ($self, $data) = @_;
 
    if ($data =~ s/^image_sums \d+ \d+ //) {
-      my ($num, $chksum, $faceset, $name) = unpack "n N C C/Z*", $data;
+      eval {
+         my ($num, $chksum, $faceset, $name) = unpack "n N C C/Z*", $data;
 
-      $self->need_face ($num, $name, $chksum);
+         $self->need_face ($num, $name, $chksum);
+      };
 
    } elsif ($data =~ s/^image_info\s+//) {
       $self->image_info (split /\n/, $data);
@@ -794,10 +963,11 @@ C<$changed> is true).
 
 sub face_update { }
 
-=item $conn->face_find ($facenum, $facedata) [OVERWRITE]
+=item $conn->face_find ($facenum, $facedata, $cb) [OVERWRITE]
 
-Find and return the png image for the given face, or the empty list if no
-face could be found, in which case it will be requested from the server.
+Find and pass to the C<$cb> callback the png image data for the given
+face, or the empty list if no face could be found, in which case it will
+be requested from the server.
 
 =cut
 
@@ -871,15 +1041,6 @@ sub send_queue {
       ++$self->{outstanding};
       $self->send (shift @{ $self->{send_queue} });
    }
-}
-
-sub send_setup {
-   my ($self) = @_;
-
-   my $setup = join " ", setup => %{$self->{setup_req}},
-                  mapsize => "$self->{mapw}x$self->{maph}";
-
-   $self->send ($setup);
 }
 
 sub connect_ext {

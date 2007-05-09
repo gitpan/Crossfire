@@ -6,7 +6,7 @@ Crossfire - Crossfire maphandling
 
 package Crossfire;
 
-our $VERSION = '0.97';
+our $VERSION = '0.98';
 
 use strict;
 
@@ -21,17 +21,7 @@ our @EXPORT = qw(
    read_pak read_arch *ARCH TILESIZE $TILE *FACE editor_archs arch_extents
 );
 
-use JSON::Syck (); #TODO#d# replace by JSON::PC when it becomes available == working
-
-sub from_json($) {
-   $JSON::Syck::ImplicitUnicode = 1;
-   JSON::Syck::Load $_[0]
-}
-
-sub to_json($) {
-   $JSON::Syck::ImplicitUnicode = 0;
-   JSON::Syck::Dump $_[0]
-}
+use JSON::XS qw(from_json to_json);
 
 our $LIB = $ENV{CROSSFIRE_LIBDIR};
 
@@ -70,12 +60,14 @@ our @FIELD_ORDER_MAP = (qw(
 ));
 
 our @FIELD_ORDER = (qw(
+   inherit
+
    elevation
 
    name name_pl custom_name attach title race
-   slaying skill msg lore other_arch face
-   #todo-events
-   animation is_animated
+   slaying skill msg lore other_arch
+   face animation is_animated
+   magicmap smoothlevel smoothface
    str dex con wis pow cha int
    hp maxhp sp maxsp grace maxgrace
    exp perm_exp expmul
@@ -93,7 +85,7 @@ our @FIELD_ORDER = (qw(
    path_attuned path_repelled path_denied material materialname
    value carrying weight invisible state magic
    last_heal last_sp last_grace last_eat
-   connected glow_radius randomitems npx_status npc_program
+   connected glow_radius randomitems tresure_env npx_status npc_program
    run_away pick_up container will_apply smoothlevel
    current_weapon_script weapontype tooltype elevation client_type
    item_power duration range
@@ -114,6 +106,7 @@ our @FIELD_ORDER = (qw(
    has_ready_skill has_ready_weapon no_skill_ident is_blind can_see_in_dark
    is_cauldron is_dust no_steal one_hit berserk neutral no_attack no_damage
    activate_on_push activate_on_release is_water use_content_on_gen is_buildable
+   precious
 
    body_range body_arm body_torso body_head body_neck body_skill
    body_finger body_shoulder body_foot body_hand body_wrist body_waist
@@ -140,7 +133,8 @@ sub MOVE_FLY_HIGH  (){ 0x04 }
 sub MOVE_FLYING    (){ 0x06 }
 sub MOVE_SWIM      (){ 0x08 }
 sub MOVE_BOAT      (){ 0x10 }
-sub MOVE_KNOWN     (){ 0x1f } # all of above
+sub MOVE_SHIP      (){ 0x20 }
+sub MOVE_KNOWN     (){ 0x3f } # all of above
 sub MOVE_ALL       (){ 0x10000 } # very special value
 
 our %MOVE_TYPE = (
@@ -150,10 +144,11 @@ our %MOVE_TYPE = (
    flying   => MOVE_FLYING,
    swim     => MOVE_SWIM,
    boat     => MOVE_BOAT,
+   ship     => MOVE_SHIP,
    all      => MOVE_ALL,
 );
 
-our @MOVE_TYPE = qw(all walk flying fly_low fly_high swim boat);
+our @MOVE_TYPE = keys %MOVE_TYPE;
 
 {
    package Crossfire::MoveType;
@@ -354,10 +349,13 @@ sub normalize_object($) {
       }
    }
 
+   # color_fg is used as default for magicmap if magicmap does not exist
+   $ob->{magicmap} ||= delete $ob->{color_fg} if exists $ob->{color_fg};
+
    # nuke outdated or never supported fields
    delete @$ob{qw(
       can_knockback can_parry can_impale can_cut can_dam_armour
-      can_apply pass_thru can_pass_thru
+      can_apply pass_thru can_pass_thru color_bg color_fg
    )};
 
    if (my $mask = delete $ob->{immune}    ) { _add_resist $ob, $mask,  100; }
@@ -892,6 +890,36 @@ sub load_archetypes() {
    };
 }
 
+sub construct_tilecache_pb {
+   my ($idx, $cache) = @_;
+
+   my $pb = new Gtk2::Gdk::Pixbuf "rgb", 1, 8, 64 * TILESIZE, TILESIZE * int +($idx + 63) / 64;
+
+   while (my ($name, $tile) = each %$cache) {
+      my $tpb = delete $tile->{pb};
+      my $ofs = $tile->{idx};
+
+      for my $x (0 .. $tile->{w} - 1) {
+         for my $y (0 .. $tile->{h} - 1) {
+            my $idx = $ofs + $x + $y * $tile->{w};
+            $tpb->copy_area ($x * TILESIZE, $y * TILESIZE, TILESIZE, TILESIZE,
+                             $pb, ($idx % 64) * TILESIZE, TILESIZE * int $idx / 64);
+         }
+      }
+   }
+
+   $pb->save ("$VARDIR/tilecache.png", "png", compression => 1);
+
+   $cache
+}
+
+sub use_tilecache {
+   my ($face) = @_;
+   $TILE = new_from_file Gtk2::Gdk::Pixbuf "$VARDIR/tilecache.png"
+      or die "$VARDIR/tilecache.png: $!";
+   *FACE = $_[0];
+}
+
 =item load_tilecache
 
 (Re-)Load %TILE and %FACE.
@@ -901,53 +929,71 @@ sub load_archetypes() {
 sub load_tilecache() {
    require Gtk2;
 
-   cache_file "$LIB/crossfire.0", "$VARDIR/tilecache.pst", sub {
-      $TILE = new_from_file Gtk2::Gdk::Pixbuf "$VARDIR/tilecache.png"
-         or die "$VARDIR/tilecache.png: $!";
-      *FACE = $_[0];
-   }, sub {
-      my $tile = read_pak "$LIB/crossfire.0";
+   if (-e "$LIB/crossfire.0") { # Crossfire1 version
+      cache_file "$LIB/crossfire.0", "$VARDIR/tilecache.pst", \&use_tilecache,
+         sub {
+            my $tile = read_pak "$LIB/crossfire.0";
 
-      my %cache;
+            my %cache;
 
-      my $idx = 0;
+            my $idx = 0;
 
-      for my $name (sort keys %$tile) {
-         my $pb = new Gtk2::Gdk::PixbufLoader;
-         $pb->write ($tile->{$name});
-         $pb->close;
-         my $pb = $pb->get_pixbuf;
+            for my $name (sort keys %$tile) {
+               my $pb = new Gtk2::Gdk::PixbufLoader;
+               $pb->write ($tile->{$name});
+               $pb->close;
+               my $pb = $pb->get_pixbuf;
 
-         my $tile = $cache{$name} = {
-            pb  => $pb,
-            idx => $idx,
-            w   => int $pb->get_width  / TILESIZE,
-            h   => int $pb->get_height / TILESIZE,
-         };
-                  
+               my $tile = $cache{$name} = {
+                  pb  => $pb,
+                  idx => $idx,
+                  w   => int $pb->get_width  / TILESIZE,
+                  h   => int $pb->get_height / TILESIZE,
+               };
 
-         $idx += $tile->{w} * $tile->{h};
-      }
-
-      my $pb = new Gtk2::Gdk::Pixbuf "rgb", 1, 8, 64 * TILESIZE, TILESIZE * int +($idx + 63) / 64;
-
-      while (my ($name, $tile) = each %cache) {
-         my $tpb = delete $tile->{pb};
-         my $ofs = $tile->{idx};
-
-         for my $x (0 .. $tile->{w} - 1) {
-            for my $y (0 .. $tile->{h} - 1) {
-               my $idx = $ofs + $x + $y * $tile->{w};
-               $tpb->copy_area ($x * TILESIZE, $y * TILESIZE, TILESIZE, TILESIZE,
-                                $pb, ($idx % 64) * TILESIZE, TILESIZE * int $idx / 64);
+               $idx += $tile->{w} * $tile->{h};
             }
-         }
-      }
 
-      $pb->save ("$VARDIR/tilecache.png", "png", compression => 1);
+            construct_tilecache_pb $idx, \%cache;
 
-      \%cache
-   };
+            \%cache
+         };
+
+   } else { # Crossfire+ version
+      cache_file "$LIB/facedata", "$VARDIR/tilecache.pst", \&use_tilecache,
+         sub {
+            my %cache;
+            my $facedata = Storable::retrieve "$LIB/facedata";
+
+            $facedata->{version} == 2
+               or die "$LIB/facedata: version mismatch, cannot proceed.";
+
+            my $faces = $facedata->{faceinfo};
+            my $idx = 0;
+
+            for (sort keys %$faces) {
+               my ($face, $info) = ($_, $faces->{$_});
+
+               my $pb = new Gtk2::Gdk::PixbufLoader;
+               $pb->write ($info->{data32});
+               $pb->close;
+               my $pb = $pb->get_pixbuf;
+
+               my $tile = $cache{$face} = {
+                  pb  => $pb,
+                  idx => $idx,
+                  w   => int $pb->get_width  / TILESIZE,
+                  h   => int $pb->get_height / TILESIZE,
+               };
+
+               $idx += $tile->{w} * $tile->{h};
+            }
+
+            construct_tilecache_pb $idx, \%cache;
+
+            \%cache
+         };
+   }
 }
 
 =head1 AUTHOR

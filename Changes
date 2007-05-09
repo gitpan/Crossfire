@@ -1,3 +1,10 @@
+
+0.98 Wed May  9 13:44:15 CEST 2007
+	- switch to JSON::XS.
+        - much better setup negotiation capabilities.
+        - incompatibly changed some interfaces to allow
+          for callback-driven programming styles.
+
 0.97 Mon Mar  5 02:07:42 CET 2007
 	- fix movement type handling.
 

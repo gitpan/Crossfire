@@ -8,8 +8,8 @@ my $mm = MM->new({
        SUFFIX	=> '.gz',
     },
     PREREQ_PM   => {
-       AnyEvent   => 0,
-       JSON::Syck => 0.13,
+       AnyEvent => 0,
+       JSON::XS => 1.1,
     },
     NAME         => "Crossfire",
     VERSION_FROM => "Crossfire.pm",
