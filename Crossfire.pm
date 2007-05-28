@@ -6,7 +6,7 @@ Crossfire - Crossfire maphandling
 
 package Crossfire;
 
-our $VERSION = '0.98';
+our $VERSION = '0.99';
 
 use strict;
 
@@ -346,6 +346,17 @@ sub normalize_object($) {
          $ob->{materialname} = $name;
       } else {
          warn "object $ob->{_name} has unknown material ($ob->{material}) set.\n";
+      }
+   }
+
+   # check whether attachment is the same as in the archetype
+   if (exists $ob->{attach}) {
+      my $arch = $ARCH{$ob->{_name}};
+      my $js   = JSON::XS->new->utf8->canonical (1);
+
+      if (defined $arch->{attach}
+          && $js->encode ($js->decode ($ob->{attach})) eq $js->encode ($arch->{attach})) {
+         delete $ob->{attach}
       }
    }
 

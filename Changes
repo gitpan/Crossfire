@@ -1,3 +1,6 @@
+0.99 Mon May 28 23:32:53 CEST 2007
+	- elmex claims to have something done but of course didn't give a shit
+          about documenting it even with a single line.
 
 0.98 Wed May  9 13:44:15 CEST 2007
 	- switch to JSON::XS.
