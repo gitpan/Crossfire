@@ -1,5 +1,10 @@
 #!/opt/bin/perl
 
+#TODO: dwall3_3 => dwall_3_3
+#TODO: fix dialogue
+#TODO: update file format version
+#TODO: fix face names
+
 # this script checks, fixes and simplifies @match expressions in a map
 
 use Crossfire::Map;

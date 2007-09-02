@@ -6,7 +6,7 @@ Crossfire - Crossfire maphandling
 
 package Crossfire;
 
-our $VERSION = '0.99';
+our $VERSION = '1.0';
 
 use strict;
 
@@ -18,7 +18,10 @@ use List::Util qw(min max);
 use Storable qw(freeze thaw);
 
 our @EXPORT = qw(
-   read_pak read_arch *ARCH TILESIZE $TILE *FACE editor_archs arch_extents
+   read_pak read_arch
+   *ARCH $TILE *FACE *FACEDATA
+   TILESIZE CACHESTRIDE
+   editor_archs arch_extents
 );
 
 use JSON::XS qw(from_json to_json);
@@ -31,10 +34,12 @@ our $VARDIR = $ENV{HOME}    ? "$ENV{HOME}/.crossfire"
 
 mkdir $VARDIR, 0777;
 
-sub TILESIZE (){ 32 }
+sub TILESIZE    (){ 32 }
+sub CACHESTRIDE (){ 64 }
 
 our %ARCH;
-our %FACE;
+our %FACE; # face32
+our %FACEDATA;
 our $TILE;
 
 our %FIELD_MULTILINE = (
@@ -805,7 +810,10 @@ sub arch_attr($) {
    my (@section_order, %section, @attr_order);
 
    while (my $type = shift @import) {
-      push @import, @{$type->{import} || []};
+      push @import,
+         grep $_,
+            map $Crossfire::Data::TYPE{$_},
+               @{$type->{import} || []};
 
       $attr->{$_} ||= $type->{$_}
          for qw(name desc use);
@@ -904,7 +912,7 @@ sub load_archetypes() {
 sub construct_tilecache_pb {
    my ($idx, $cache) = @_;
 
-   my $pb = new Gtk2::Gdk::Pixbuf "rgb", 1, 8, 64 * TILESIZE, TILESIZE * int +($idx + 63) / 64;
+   my $pb = new Gtk2::Gdk::Pixbuf "rgb", 1, 8, CACHESTRIDE * TILESIZE, TILESIZE * int +($idx + CACHESTRIDE - 1) / CACHESTRIDE;
 
    while (my ($name, $tile) = each %$cache) {
       my $tpb = delete $tile->{pb};
@@ -914,7 +922,7 @@ sub construct_tilecache_pb {
          for my $y (0 .. $tile->{h} - 1) {
             my $idx = $ofs + $x + $y * $tile->{w};
             $tpb->copy_area ($x * TILESIZE, $y * TILESIZE, TILESIZE, TILESIZE,
-                             $pb, ($idx % 64) * TILESIZE, TILESIZE * int $idx / 64);
+                             $pb, ($idx % CACHESTRIDE) * TILESIZE, TILESIZE * int $idx / CACHESTRIDE);
          }
       }
    }
@@ -940,37 +948,7 @@ sub use_tilecache {
 sub load_tilecache() {
    require Gtk2;
 
-   if (-e "$LIB/crossfire.0") { # Crossfire1 version
-      cache_file "$LIB/crossfire.0", "$VARDIR/tilecache.pst", \&use_tilecache,
-         sub {
-            my $tile = read_pak "$LIB/crossfire.0";
-
-            my %cache;
-
-            my $idx = 0;
-
-            for my $name (sort keys %$tile) {
-               my $pb = new Gtk2::Gdk::PixbufLoader;
-               $pb->write ($tile->{$name});
-               $pb->close;
-               my $pb = $pb->get_pixbuf;
-
-               my $tile = $cache{$name} = {
-                  pb  => $pb,
-                  idx => $idx,
-                  w   => int $pb->get_width  / TILESIZE,
-                  h   => int $pb->get_height / TILESIZE,
-               };
-
-               $idx += $tile->{w} * $tile->{h};
-            }
-
-            construct_tilecache_pb $idx, \%cache;
-
-            \%cache
-         };
-
-   } else { # Crossfire+ version
+   if (-e "$LIB/facedata") { # Crossfire TRT faces
       cache_file "$LIB/facedata", "$VARDIR/tilecache.pst", \&use_tilecache,
          sub {
             my %cache;
@@ -1004,6 +982,40 @@ sub load_tilecache() {
 
             \%cache
          };
+
+      *FACEDATA = Storable::retrieve "$LIB/facedata";
+
+   } elsif (-e "$LIB/crossfire.0") { # Crossfire1 version
+      cache_file "$LIB/crossfire.0", "$VARDIR/tilecache.pst", \&use_tilecache,
+         sub {
+            my $tile = read_pak "$LIB/crossfire.0";
+
+            my %cache;
+
+            my $idx = 0;
+
+            for my $name (sort keys %$tile) {
+               my $pb = new Gtk2::Gdk::PixbufLoader;
+               $pb->write ($tile->{$name});
+               $pb->close;
+               my $pb = $pb->get_pixbuf;
+
+               my $tile = $cache{$name} = {
+                  pb  => $pb,
+                  idx => $idx,
+                  w   => int $pb->get_width  / TILESIZE,
+                  h   => int $pb->get_height / TILESIZE,
+               };
+
+               $idx += $tile->{w} * $tile->{h};
+            }
+
+            construct_tilecache_pb $idx, \%cache;
+
+            \%cache
+         };
+
+      *FACEDATA = { };
    }
 }
 
@@ -1018,3 +1030,4 @@ sub load_tilecache() {
 =cut
 
 1
+

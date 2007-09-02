@@ -6,6 +6,7 @@ Crossfire.pm
 Crossfire/Data.pm
 Crossfire/Map.pm
 Crossfire/MapWidget.pm
+Crossfire/MoveType.pm
 Crossfire/Protocol/Constants.pm
 Crossfire/Protocol/Base.pm
 Crossfire/Protocol.pm

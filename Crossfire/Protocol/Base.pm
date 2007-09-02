@@ -25,7 +25,7 @@ use IO::Socket::INET;
 
 use Crossfire::Protocol::Constants;
 
-use JSON::XS qw(from_json to_json);
+use JSON::XS ();
 
 =item new Crossfire::Protocol::Base host => ..., port => ...
 
@@ -39,10 +39,11 @@ sub new {
       mapw            => 13,
       maph            => 13,
       max_outstanding => 2,
-      token           => "a0",
+      token           => "a",
       ncom            => [0..255],
       client          => "Crossfire Perl Module $VERSION $] $^O $0",
       tilesize        => 32,
+      json_coder      => (JSON::XS->new->max_size(1e7)->utf8),
       @_
    }, $class;
 
@@ -68,7 +69,7 @@ sub new {
    });
 
    $self->{setup} = {
-      sound             => 1,
+      #sound             => 0,
       exp64             => 1,
       map1acmd          => 1,
       itemcmd           => 2,
@@ -76,12 +77,12 @@ sub new {
       facecache         => 1,
       newmapcmd         => 1,
       mapinfocmd        => 1,
-      extcmd            => 1,
+      extcmd            => 2,
       extendedTextInfos => 1,
       spellmon          => 1,
-      fxix              => 1,
+      fxix              => 3,
       excmd             => 1,
-      msg               => 1,
+      msg               => 2,
       %{$self->{setup_req} || {} },
    };
 
@@ -107,13 +108,15 @@ sub token {
 sub feed {
    my ($self, $data) = @_;
 
-   $data =~ s/^([^ ]+)(?: |$)//
-      or return;
+   eval {
+      $data =~ s/^([^ ]+)(?: |$)//
+         or return;
 
-   my $cb = $self->can ("feed_$1")
-      or return; # ignore unknown commands
+      my $cb = $self->can ("feed_$1")
+         or return; # ignore unknown commands
 
-   $cb->($self, $data);
+      $cb->($self, $data);
+   };
 
    warn $@ if $@;
 }
@@ -187,12 +190,14 @@ sub setup_chk {
       if ($mapw != $self->{mapw} || $maph != $self->{maph}) {
          ($self->{mapw}, $self->{maph}) = ($mapw, $maph);
 
-         # 2.x servers do not suffer from the stupid
+         # TRT servers do not suffer from the stupid
          # mapsize-returns-two-things semantics anymore
          $self->setup_req (mapsize => "$self->{mapw}x$self->{maph}")
             unless $self->{setup}{extcmd} > 0;
       }
    }
+
+   $self->{setup}{extcmd} = 0 if $self->{setup}{extcmd} != 2;
 }
 
 sub feed_setup {
@@ -211,7 +216,7 @@ sub feed_setup {
       $self->setup ($self->{setup});
 
       # servers supporting exticmd do sensible bandwidth management
-      $self->{max_outstanding} = 512 if $self->{setup}{extcmd} > 0;
+      $self->{max_outstanding} = 4096 if $self->{setup}{extcmd} > 0;
 
       $self->send ("addme");
       $self->feed_newmap;
@@ -277,18 +282,23 @@ sub feed_face1 {
 
    my ($num, $chksum, $name) = unpack "nNa*", $data;
 
-   $self->need_face ($num, $name, $chksum);
+   $self->need_face ($num, { name => "$name\x00$chksum", type => 0 });
 }
 
 sub feed_fx {
    my ($self, $data) = @_;
 
+   my $type = 0;
    my @info = unpack "(w C/a)*", $data;
    while (@info) {
-      my $chksum  = pop @info;
-      my $facenum = pop @info;
+      my $facenum = shift @info;
+      my $name    = shift @info;
 
-      $self->need_face ($facenum, (unpack "H*", $chksum), 0);
+      if ($facenum) {
+         $self->need_face ($facenum, { name => $name, type => $type });
+      } else {
+         $type = unpack "w", $name;
+      }
    }
 }
 
@@ -307,7 +317,6 @@ sub feed_sx {
       my $smooth  = pop @info;
       my $facenum = pop @info;
 
-
       my $face = $self->{face}[$facenum];
 
       $face->{smoothface}  = $smooth;
@@ -318,19 +327,36 @@ sub feed_sx {
 }
 
 sub need_face {
-   my ($self, $num, $name, $chksum) = @_;
+   my ($self, $num, $face) = @_;
 
-   my $face = $self->{face}[$num] = { name => $name, chksum => $chksum };
+   $face->{loading} = 1;
+
+   $self->{face}[$num] = $face;
 
    $self->face_find ($num, $face, sub {
       my ($data) = @_;
+
       if (length $data) {
-         $face->{image} = $data;
+         delete $face->{loading};
+         $face->{data} = $data;
          $self->face_update ($num, $face, 0);
       } else {
          $self->send_queue ("askface $num");
       }
    });
+}
+
+=item $conn->ask_face ($num, $pri, $data_cb, $finish_cb)
+
+=cut
+
+sub ask_face {
+   my ($self, $num, $pri, $data_cb, $finish_cb) = @_;
+
+   $self->{ask_face}{$num} = [$data_cb || undef, $finish_cb || sub { }]
+      if $data_cb || $finish_cb;
+
+   $self->send_queue ($pri ? "askface $num $pri" : "askface $num");
 }
 
 =item $conn->anim_update ($num) [OVERWRITE]
@@ -349,16 +375,17 @@ sub feed_anim {
    $self->anim_update ($num);
 }
 
-=item $conn->sound_play ($x, $y, $soundnum, $type)
+=item $conn->sound_play ($type, $face, $dx, $dy, $volume)
 
 =cut
 
 sub sound_play { }
 
-sub feed_sound {
+sub feed_sc {
    my ($self, $data) = @_;
 
-   $self->sound_play (unpack "ccnC", $data);
+   $self->sound_play (unpack "CwccC", $_)
+      for unpack "(w/a*)*", $data;
 }
 
 =item $conn->query ($flags, $prompt)
@@ -412,14 +439,13 @@ sub drawextinfo {
       1 while s{ \[i\] (.*?) \[/i\] }{<i>$1</i>}igx;
       1 while s{ \[ul\](.*?) \[/ul\]}{<u>$1</u>}igx;
       1 while s{ \[fixed\](.*?)\[/fixed\]}{<tt>$1</tt>}igx;
-      1 while s{ \[color=(.*?)\] (.*?) \[/color\]}{<span foreground='$1'>$2</span>}igx;
+      1 while s{ \[color=(.*?)\] (.*?) \[/color\]}{<fg name='$1'>$2</fg>}igx;
 
       #TODO: arcance, hand, strange, print font tags
       1 while s{ \[arcane\]  (.*?) \[/arcane\]  }{<i>$1</i>}igx;
       1 while s{ \[hand\]    (.*?) \[/hand\]    }{<i>$1</i>}igx;
       1 while s{ \[strange\] (.*?) \[/strange\] }{<i>$1</i>}igx;
       1 while s{ \[print\]   (.*?) \[/print\]   }{$1}igx;
-
    }
 
    $self->msg ($color, $type, $message, $subtype);
@@ -464,7 +490,7 @@ sub feed_msg {
    my ($self, $data) = @_;
 
    if ($data =~ /^\s*\[/) {
-      $self->msg (@{ from_json $data });
+      $self->msg (@{ $self->{json_coder}->decode ($data) });
    } else {
       utf8::decode $data;
       $self->msg (split /\s+/, $data, 3);
@@ -762,9 +788,6 @@ sub feed_addspell {
          message      => (shift @data),
       };
 
-      $self->send ("requestinfo image_sums $spell->{face} $spell->{face}")
-         unless $self->{spell_face}[$spell->{face}]++;
-
       $self->spell_add ($self->{spell}{$spell->{tag}} = $spell);
    }
 }
@@ -864,8 +887,13 @@ sub feed_image {
    my ($num, $len, $data) = unpack "NNa*", $data;
 
    $self->send_queue;
-   $self->{face}[$num]{image} = $data;
-   $self->face_update ($num, $self->{face}[$num], 1);
+
+   my $face = $self->{face}[$num];
+
+   delete $face->{loading};
+   $face->{data} = $data;
+   $self->face_update ($num, $face, 1);
+
    $self->map_update;
 }
 
@@ -874,15 +902,31 @@ sub feed_ix {
 
    my ($num, $ofs, $data) = unpack "w w a*", $data;
 
-   # void stupid substr out of range error
-   $self->{ix_recv_buf} = " " x $ofs unless exists $self->{ix_recv_buf};
-   substr $self->{ix_recv_buf}, $ofs, (length $data), $data;
+   my $cbs = $self->{ask_face}{$num};
+
+   if (my $cb = $cbs && $cbs->[0]) {
+      $cb->($num, $ofs, $data);
+   } else {
+      # avoid stupid substr out of range error
+      $self->{ix_recv_buf}{$num} = " " x $ofs
+         unless exists $self->{ix_recv_buf}{$num};
+      substr $self->{ix_recv_buf}{$num}, $ofs, (length $data), $data;
+   }
 
    unless ($ofs) {
       $self->send_queue;
-      $self->{face}[$num]{image} = delete $self->{ix_recv_buf};
-      $self->face_update ($num, $self->{face}[$num], 1);
-      $self->map_update;
+
+      if ($cbs) {
+         $cbs->[1]->($num, delete $self->{ix_recv_buf}{$num});
+      } else {
+         my $face = $self->{face}[$num];
+
+         delete $face->{loading};
+         $face->{data} = delete $self->{ix_recv_buf}{$num};
+         $self->face_update ($num, $face, 1);
+
+         $self->map_update;
+      }
    }
 }
 
@@ -896,11 +940,10 @@ sub feed_replyinfo {
    my ($self, $data) = @_;
 
    if ($data =~ s/^image_sums \d+ \d+ //) {
-      eval {
-         my ($num, $chksum, $faceset, $name) = unpack "n N C C/Z*", $data;
-
-         $self->need_face ($num, $name, $chksum);
-      };
+      #eval {
+      #   my ($num, $chksum, $faceset, $name) = unpack "n N C C/Z*", $data;
+      #   $self->need_face ($num, "$name$chksum");
+      #};
 
    } elsif ($data =~ s/^image_info\s+//) {
       $self->image_info (split /\n/, $data);
@@ -935,10 +978,9 @@ Called whenever the map is to be erased completely.
 
 sub map_clear  { }
 
-=item $conn->map_update ([ [x,y], [x,y], ...]) [OVERWRITE]
+=item $conn->map_update
 
-Called with a list of x|y coordinate pairs (as arrayrefs) for cells that
-have been updated and need refreshing.
+Called whenever map data or faces have been received.
 
 =cut
 
@@ -985,6 +1027,19 @@ sub send {
    $data = pack "na*", length $data, $data;
 
    syswrite $self->{fh}, $data;
+}
+
+=item $conn->send_utf8 ($data)
+
+Send a single packet/line to the server and encodes it to
+utf-8 before sending it.
+
+=cut
+
+sub send_utf8 {
+   my ($self, $data) = @_;
+   utf8::encode $data;
+   $self->send ($data);
 }
 
 =item $conn->send_command ($command[, $cb1[, $cb2]])
@@ -1058,38 +1113,52 @@ sub disconnect_ext {
 sub feed_ext {
    my ($self, $data) = @_;
 
-   my $msg = eval { from_json $data }
+   my ($type, @payload) = eval { @{ $self->{json_coder}->decode ($data) } }
       or return;
 
-   my $cb = $self->{extcmd_cb_id}{$msg->{msgid}} || $self->{extcmd_cb_type}{$msg->{msgtype}}
-      or return;
-
-   $cb->($msg)
-      or delete $self->{extcmd_cb_id}{$msg->{msgid}};
+   if (my $cb = $self->{extcmd_cb_id}{$type} || $self->{extcmd_cb_type}{$type}) {
+      $cb->(@payload)
+         or delete $self->{extcmd_cb_id}{$type};
+   } elsif (my $cb = $self->can ("ext_$type")) {
+      $cb->($self, @payload);
+   }
 }
 
 sub send_ext_msg {
-   my ($self, $type, %msg) = @_;
+   my ($self, $type, @msg) = @_;
 
-   $msg{msgtype} = $type;
+   $self->send ("ext " . $self->{json_coder}->encode ([$type, 0, @msg]));
+}
 
-   $self->send ("ext " . to_json \%msg);
+sub send_exti_msg {
+   my ($self, $type, @msg) = @_;
+
+   $self->send ("exti " . $self->{json_coder}->encode ([$type, 0, @msg]));
 }
 
 sub send_ext_req {
    my $cb = pop; # callback is last
-   my ($self, $type, %msg) = @_;
+   my ($self, $type, @msg) = @_;
 
-   if ($self->{setup}{extcmd} > 0) {
+   if ($self->{setup}{extcmd} == 2) {
       my $id = $self->token;
-      $self->{extcmd_cb_id}{$id} = $cb;
-      $self->send_ext_msg ($type, %msg, msgid => $id);
-
-      return $id;
+      $self->{extcmd_cb_id}{"reply-$id"} = $cb;
+      $self->send ("ext " . $self->{json_coder}->encode ([$type, $id, @msg]));
    } else {
       $cb->(); # == not supported by server
+   }
+}
 
-      return;
+sub send_exti_req {
+   my $cb = pop; # callback is last
+   my ($self, $type, @msg) = @_;
+
+   if ($self->{setup}{extcmd} == 2) {
+      my $id = $self->token;
+      $self->{extcmd_cb_id}{"reply-$id"} = $cb;
+      $self->send ("exti " . $self->{json_coder}->encode ([$type, $id, @msg]));
+   } else {
+      $cb->(); # == not supported by server
    }
 }
 

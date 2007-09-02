@@ -166,6 +166,200 @@
        Whether the teleporter should only be activated on release.
      </attribute>
   ">
+
+  <!ENTITY resistances_flesh_desc "
+    Resistances on flesh items make them more durable against spellcraft
+    of the appropriate kind. It also allows dragon players to eventually gain
+    resistance by eating it. Usually resistance should only be set for flesh
+    items in a monster's inventory.
+  ">
+
+  <!ENTITY resistances_flesh_section "
+   <section name='resistance'>
+     <attribute arch='resist_physical' editor='resist physical &#x25;' length='15' type='int'>
+       &resistances_flesh_desc;
+     </attribute>
+     <attribute arch='resist_magic' editor='resist magic &#x25;' length='15' type='int'>
+       &resistances_flesh_desc;
+     </attribute>
+     <attribute arch='resist_fire' editor='resist fire &#x25;' length='15' type='int'>
+       &resistances_flesh_desc;
+     </attribute>
+     <attribute arch='resist_electricity' editor='resist electricity &#x25;' length='15' type='int'>
+       &resistances_flesh_desc;
+     </attribute>
+     <attribute arch='resist_cold' editor='resist cold &#x25;' length='15' type='int'>
+       &resistances_flesh_desc;
+     </attribute>
+     <attribute arch='resist_confusion' editor='resist confusion &#x25;' length='15' type='int'>
+       &resistances_flesh_desc;
+     </attribute>
+     <attribute arch='resist_acid' editor='resist acid &#x25;' length='15' type='int'>
+       &resistances_flesh_desc;
+     </attribute>
+     <attribute arch='resist_drain' editor='resist draining &#x25;' length='15' type='int'>
+       &resistances_flesh_desc;
+     </attribute>
+     <attribute arch='resist_weaponmagic' editor='resist weaponmagic &#x25;' length='15' type='int'>
+       &resistances_flesh_desc;
+     </attribute>
+     <attribute arch='resist_ghosthit' editor='resist ghosthit &#x25;' length='15' type='int'>
+       &resistances_flesh_desc;
+     </attribute>
+     <attribute arch='resist_poison' editor='resist poison &#x25;' length='15' type='int'>
+       &resistances_flesh_desc;
+     </attribute>
+     <attribute arch='resist_slow' editor='resist slow &#x25;' length='15' type='int'>
+       &resistances_flesh_desc;
+     </attribute>
+     <attribute arch='resist_paralyze' editor='resist paralyze &#x25;' length='15' type='int'>
+       &resistances_flesh_desc;
+     </attribute>
+     <attribute arch='resist_fear' editor='resist fear &#x25;' length='15' type='int'>
+       &resistances_flesh_desc;
+     </attribute>
+     <attribute arch='resist_deplete' editor='resist depletion &#x25;' length='15' type='int'>
+       &resistances_flesh_desc;
+     </attribute>
+     <attribute arch='resist_death' editor='resist death-attack &#x25;' length='15' type='int'>
+       &resistances_flesh_desc;
+     </attribute>
+     <attribute arch='resist_chaos' editor='resist chaos &#x25;' length='15' type='int'>
+       &resistances_flesh_desc;
+     </attribute>
+     <attribute arch='resist_blind' editor='resist blinding &#x25;' length='15' type='int'>
+       &resistances_flesh_desc;
+     </attribute>
+   </section>
+  ">
+
+  <!ENTITY resistances_basic "
+   <section name='resistance'>
+     <attribute arch='resist_physical' editor='resist physical &#x25;' length='15' type='int'/>
+     <attribute arch='resist_magic' editor='resist magic &#x25;' length='15' type='int'/>
+     <attribute arch='resist_fire' editor='resist fire &#x25;' length='15' type='int'/>
+     <attribute arch='resist_electricity' editor='resist electricity &#x25;' length='15' type='int'/>
+     <attribute arch='resist_cold' editor='resist cold &#x25;' length='15' type='int'/>
+     <attribute arch='resist_confusion' editor='resist confusion &#x25;' length='15' type='int'/>
+     <attribute arch='resist_acid' editor='resist acid &#x25;' length='15' type='int'/>
+     <attribute arch='resist_drain' editor='resist draining &#x25;' length='15' type='int'/>
+     <attribute arch='resist_weaponmagic' editor='resist weaponmagic &#x25;' length='15' type='int'/>
+     <attribute arch='resist_ghosthit' editor='resist ghosthit &#x25;' length='15' type='int'/>
+     <attribute arch='resist_poison' editor='resist poison &#x25;' length='15' type='int'/>
+     <attribute arch='resist_slow' editor='resist slow &#x25;' length='15' type='int'/>
+     <attribute arch='resist_paralyze' editor='resist paralyze &#x25;' length='15' type='int'/>
+     <attribute arch='resist_fear' editor='resist fear &#x25;' length='15' type='int'/>
+     <attribute arch='resist_deplete' editor='resist depletion &#x25;' length='15' type='int'/>
+     <attribute arch='resist_death' editor='resist death-attack &#x25;' length='15' type='int'/>
+     <attribute arch='resist_chaos' editor='resist chaos &#x25;' length='15' type='int'/>
+     <attribute arch='resist_blind' editor='resist blinding &#x25;' length='15' type='int'/>
+     <attribute arch='resist_holyword' editor='resist holy power &#x25;' length='15' type='int'/>
+     <attribute arch='resist_godpower' editor='resist godpower &#x25;' length='15' type='int'/>
+   </section>
+  ">
+
+   <!ENTITY player_stat_desc "
+    The player's strentgh will rise/fall by the given value for permanent
+    (of course there is an upper limit). Generally there shouldn't be stat
+    potions granting more than one stat. Cursed potions will subtract the
+    stats if positive.
+   ">
+
+   <!ENTITY player_res_desc "
+    The player's resistance to physical will rise by this value in percent
+    (range -100 till +100). The effect is only temporare, and it does NOT
+    add on the values from the player's equipment.
+    Cursed potions will make negative resistance.. very nasty in combat!
+   ">
+
+   <!ENTITY player_stat_resist_sections "
+      <section name='stats'>
+        <attribute arch='Str' editor='strength' type='int'>
+          &player_stat_desc;
+        </attribute>
+        <attribute arch='Dex' editor='dexterity' type='int'>
+          &player_stat_desc;
+        </attribute>
+        <attribute arch='Con' editor='constitution' type='int'>
+          &player_stat_desc;
+        </attribute>
+        <attribute arch='Int' editor='intelligence' type='int'>
+          &player_stat_desc;
+        </attribute>
+        <attribute arch='Pow' editor='power' type='int'>
+          &player_stat_desc;
+        </attribute>
+        <attribute arch='Wis' editor='wisdom' type='int'>
+          &player_stat_desc;
+        </attribute>
+        <attribute arch='Cha' editor='charisma' type='int'>
+          &player_stat_desc;
+        </attribute>
+      </section>
+      <section name='resistance'>
+        <attribute arch='resist_physical' editor='resist physical &#x25;' length='15' type='int'>
+          &player_res_desc;
+        </attribute>
+        <attribute arch='resist_magic' editor='resist magic &#x25;' length='15' type='int'>
+          &player_res_desc;
+        </attribute>
+        <attribute arch='resist_fire' editor='resist fire &#x25;' length='15' type='int'>
+          &player_res_desc;
+        </attribute>
+        <attribute arch='resist_electricity' editor='resist electricity &#x25;' length='15' type='int'>
+          &player_res_desc;
+        </attribute>
+        <attribute arch='resist_cold' editor='resist cold &#x25;' length='15' type='int'>
+          &player_res_desc;
+        </attribute>
+        <attribute arch='resist_acid' editor='resist acid &#x25;' length='15' type='int'>
+          &player_res_desc;
+        </attribute>
+        <attribute arch='resist_confusion' editor='resist confusion &#x25;' length='15' type='int'>
+          &player_res_desc;
+        </attribute>
+        <attribute arch='resist_weaponmagic' editor='resist weaponmagic &#x25;' length='15' type='int'>
+          &player_res_desc;
+        </attribute>
+        <attribute arch='resist_ghosthit' editor='resist ghosthit &#x25;' length='15' type='int'>
+          &player_res_desc;
+        </attribute>
+        <attribute arch='resist_slow' editor='resist slow &#x25;' length='15' type='int'>
+          &player_res_desc;
+        </attribute>
+        <attribute arch='resist_fear' editor='resist fear &#x25;' length='15' type='int'>
+          &player_res_desc;
+        </attribute>
+        <attribute arch='resist_death' editor='resist death-attack &#x25;' length='15' type='int'>
+          &player_res_desc;
+        </attribute>
+        <attribute arch='resist_chaos' editor='resist chaos &#x25;' length='15' type='int'>
+          &player_res_desc;
+        </attribute>
+        <attribute arch='resist_blind' editor='resist blinding &#x25;' length='15' type='int'>
+          &player_res_desc;
+        </attribute>
+        <attribute arch='resist_holyword' editor='resist holy power &#x25;' length='15' type='int'>
+          &player_res_desc;
+        </attribute>
+        <attribute arch='resist_godpower' editor='resist godpower &#x25;' length='15' type='int'>
+          &player_res_desc;
+        </attribute>
+        <attribute arch='resist_paralyze' editor='resist paralyze &#x25;' length='15' type='int'>
+          &player_res_desc;
+        </attribute>
+        <attribute arch='resist_drain' editor='resist draining &#x25;' length='15' type='int'>
+          &player_res_desc;
+        </attribute>
+        <attribute arch='resist_deplete' editor='resist depletion &#x25;' length='15' type='int'>
+          &player_res_desc;
+        </attribute>
+        <attribute arch='resist_poison' editor='resist poison &#x25;' length='15' type='int'>
+          &player_res_desc;
+        </attribute>
+      </section>
+   ">
+
 ]>
 
 <types>
@@ -508,6 +702,16 @@
     a shop mat, paying the demanded price. Setting this flag makes sense
     only for pickable items inside shops.
   </attribute>
+  <attribute arch="sound" editor="sound" type="string">
+    The sound this objects makes on a map. Enter either a sound alias from
+    arch/res/sound.conf.res or a path. If you enter &lt;path&gt; in this
+    field it will point to sound/&lt;path&gt;.ext
+  </attribute>
+  <attribute arch="sound_destroy" editor="destroy sound" type="string">
+    The sound this objects makes when it is destroyed. Enter either a sound alias from
+    arch/res/sound.conf.res or a path. If you enter &lt;path&gt; in this
+    field it will point to sound/&lt;path&gt;.ext
+  </attribute>
 </default_type>
 
 <!-- This ignorelist is for all system objects which are non pickable
@@ -758,6 +962,22 @@
 </type>
 
 <!--####################################################################-->
+<type number="74" name="Skill Tool">
+  <description><![CDATA[
+    Wearing a skill tool will give the player the ability to use a skill.
+  ]]>
+  </description>
+  <use><![CDATA[
+    Feel free to assign resistancies and stats to a skill tools or change
+    the skill that is given.
+  ]]>
+  </use>
+  <attribute arch="skill" editor="skill name" type="string">
+  This field describes which skill the player will be able to use wearing this item.
+  </attribute>
+  &player_stat_resist_sections;
+</type>
+<!--####################################################################-->
 <type number="39" name="Amulet">
   <description><![CDATA[
     Wearing an amulet, the object's stats will directly be inherited to
@@ -822,138 +1042,7 @@
     Enabling this flag doesn't make any sense if the item
     is NOT in a monster's inventory.
   </attribute>
-<section name="resistance">
-  <attribute arch="resist_physical" editor="resist physical %" length="15" type="int">
-    This adds physical resistance to the item (= armour value). The number is
-    a percent-value in the range 0-100. Treat this with CARE. Look at other maps
-    and what they require to do for getting this-and-that artifact.
-  </attribute>
-  <attribute arch="resist_magic" editor="resist magic %" length="15" type="int">
-    This adds magic resistance to the item. The number is a percent-value in
-    the range 0-100. Treat this with CARE. Look at other maps and what they
-    require to do for getting this-and-that artifact.
-  </attribute>
-  <attribute arch="resist_fire" editor="resist fire %" length="15" type="int">
-    This adds fire resistance to the item. The number is a percent-value in
-    the range 0-100. Treat this with CARE. Look at other maps and what they
-    require to do for getting this-and-that artifact.
-  </attribute>
-  <attribute arch="resist_electricity" editor="resist electricity %" length="15" type="int">
-    This adds electricity resistance to the item. The number is a percent-value in
-    the range 0-100. Treat this with CARE. Look at other maps and what they
-    require to do for getting this-and-that artifact.
-  </attribute>
-  <attribute arch="resist_cold" editor="resist cold %" length="15" type="int">
-    This adds fire resistance to the item. The number is a percent-value in
-    the range 0-100. Treat this with CARE. Look at other maps and what they
-    require to do for getting this-and-that artifact.
-  </attribute>
-  <attribute arch="resist_confusion" editor="resist confusion %" length="15" type="int">
-    This adds confusion resistance to the item. The number is a percent-value in
-    the range 0-100. Confusion resistance is not very effective
-    unless the value comes close to 100 (= perfect immunity).
-  </attribute>
-  <attribute arch="resist_acid" editor="resist acid %" length="15" type="int">
-    This adds acid resistance to the item. The number is a percent-value in
-    the range 0-100. Treat this with CARE. Look at other maps and what they
-    require to do for getting this-and-that artifact.
-  </attribute>
-  <attribute arch="resist_drain" editor="resist draining %" length="15" type="int">
-    This adds draining resistance to the item. The number is a percent-value
-    in the range 0-100. Draining resistance is little effective
-    unless the value is 100 (= perfect immunity).
-  </attribute>
-  <attribute arch="resist_weaponmagic" editor="resist weaponmagic %" length="15" type="int">
-    This adds weaponmagic resistance to the item. The number is a percent-value in
-    the range 0-100. Weaponmagic resistance generally should not exist on
-    equipment at all. Spells/Monsters doing weaponmagic damage (e.g. comet spell)
-    are not meant to be easily resisted.
-  </attribute>
-  <attribute arch="resist_ghosthit" editor="resist ghosthit %" length="15" type="int">
-    This adds ghosthit resistance to the item. The number is a percent-value
-    in the range 0-100. Treat this with CARE. Look at other maps and what they
-    require to do for getting this-and-that artifact.
-  </attribute>
-  <attribute arch="resist_poison" editor="resist poison %" length="15" type="int">
-    This adds poison resistance to the item. The number is a percent-value in
-    the range 0-100. Treat this with CARE. Look at other maps and what they
-    require to do for getting this-and-that artifact.
-  </attribute>
-  <attribute arch="resist_slow" editor="resist slow %" length="15" type="int">
-    This adds fear resistance to the item. The number is a percent-value in
-    the range 0-100. Resistance to fear is pretty useless.
-  </attribute>
-  <attribute arch="resist_paralyze" editor="resist paralyze %" length="15" type="int">
-    This adds paralyze resistance to the item. The number is a percent-value in
-    the range 0-100. Paralyze resistance is little effective
-    unless the value is 100 (= perfect immunity).
-  </attribute>
-  <attribute arch="resist_fear" editor="resist fear %" length="15" type="int">
-    This adds fear resistance to the item. The number is a percent-value in
-    the range 0-100. Resistance to fear is pretty useless.
-  </attribute>
-  <attribute arch="resist_deplete" editor="resist depletion %" length="15" type="int">
-    This adds depletion resistance to the item. The number is a percent-value
-    in the range 0-100. Depletion resistance is little effective
-    unless the value is 100 (= perfect immunity).
-  </attribute>
-  <attribute arch="resist_death" editor="resist death-attack %" length="15" type="int">
-    This adds death-attack resistance to the item. The number is a
-    percent-value in the range 0-100. Death-attack resistance is little
-    effective unless the value is 100 (= perfect immunity).
-    Generally, resistance to death-attack is not supposed to be
-    available to players!
-  </attribute>
-  <attribute arch="resist_chaos" editor="resist chaos %" length="15" type="int">
-    This adds chaos resistance to the item. The number is a percent-value in
-    the range 0-100. Treat this with CARE. Look at other maps and what they
-    require to do for getting this-and-that artifact.
-    Note that chaos is not a stand-alone attacktype. Chaos "contains" a
-    combination of other attacktypes.
-  </attribute>
-  <attribute arch="resist_blind" editor="resist blinding %" length="15" type="int">
-    This adds blinding resistance to the item. The number is a percent-value
-    in the range 0-100. Treat this with CARE. Look at other maps and what they
-    require to do for getting this-and-that artifact.
-  </attribute>
-  <attribute arch="resist_holyword" editor="resist holy power %" length="15" type="int">
-    This adds holy power resistance to the item. The number is a percent-value
-    in the range 0-100. Holy power is the attacktype that holyword-type spells
-    use to hurt undead creatures. This kind of resistance is only reasonable
-    for undead players (wraith or devourer cult).
-    Generally, resistance to holy word should not be available for players.
-  </attribute>
-</section>
-<section name="stats">
-  <attribute arch="Str" editor="strength" type="int">
-    The player's strentgh will rise/fall by the given value
-    while wearing this piece of equipment.
-  </attribute>
-  <attribute arch="Dex" editor="dexterity" type="int">
-    The player's dexterity will rise/fall by the given value
-    while wearing this piece of equipment.
-  </attribute>
-  <attribute arch="Con" editor="constitution" type="int">
-    The player's constitution will rise/fall by the given value
-    while wearing this piece of equipment.
-  </attribute>
-  <attribute arch="Int" editor="intelligence" type="int">
-    The player's intelligence will rise/fall by the given value
-    while wearing this piece of equipment.
-  </attribute>
-  <attribute arch="Pow" editor="power" type="int">
-    The player's power will rise/fall by the given value
-    while wearing this piece of equipment.
-  </attribute>
-  <attribute arch="Wis" editor="wisdom" type="int">
-    The player's wisdom will rise/fall by the given value while
-    wearing this piece of equipment.
-  </attribute>
-  <attribute arch="Cha" editor="charisma" type="int">
-    The player's charisma will rise/fall by the given value
-    while wearing this piece of equipment.
-  </attribute>
-</section>
+  &player_stat_resist_sections;
 <section name="misc">
   <attribute arch="luck" editor="luck bonus" type="int">
     With positive luck bonus, the player is more likely to
@@ -1865,16 +1954,9 @@
     dark cave you hear the sound of rustling dragonscales...". Well, my english
     is poor, but you get the point. =)
   </attribute>
-  <attribute arch="unique" editor="unique destination" type="bool">
-    This flag defines the destined map as "personal unique map". If set,
-    there will be a seperate version of that map for every player out there.
-    This feature is used for the permanent apartments
-    (in Scorn/Nuernberg/Caterham...). It should not be used for anything else
-    than apartments, since Crossfire is a *multi*player game. In such a permanent
-    apartment don't forget to set the unique-flag for all floor tiles too
-    (see floors).
-    An exit pointing outside of a personal unique map must have the
-    "unique destination"-flag unset.
+  <attribute arch="damned" editor="set savebed" type="bool">
+    If set, then players using this exit will have their savebed position
+    set to the destination of the exit when passing through.
   </attribute>
 </type>
 
@@ -1916,116 +1998,7 @@
     A godgiven item vanishes as soon as the player
     drops it to the ground.
   </attribute>
-<section name="resistance">
-  <attribute arch="resist_physical" editor="resist physical %" length="15" type="int">
-    Resistances on flesh items make them more durable against spellcraft
-    of the appropriate kind. It also allows dragon players to eventually gain
-    resistance by eating it. Usually resistance should only be set for flesh
-    items in a monster's inventory.
-  </attribute>
-  <attribute arch="resist_magic" editor="resist magic %" length="15" type="int">
-    Resistances on flesh items make them more durable against spellcraft
-    of the appropriate kind. It also allows dragon players to eventually gain
-    resistance by eating it. Usually resistance should only be set for flesh
-    items in a monster's inventory.
-  </attribute>
-  <attribute arch="resist_fire" editor="resist fire %" length="15" type="int">
-    Resistances on flesh items make them more durable against spellcraft
-    of the appropriate kind. It also allows dragon players to eventually gain
-    resistance by eating it. Usually resistance should only be set for flesh
-    items in a monster's inventory.
-  </attribute>
-  <attribute arch="resist_electricity" editor="resist electricity %" length="15" type="int">
-    Resistances on flesh items make them more durable against spellcraft
-    of the appropriate kind. It also allows dragon players to eventually gain
-    resistance by eating it. Usually resistance should only be set for flesh
-    items in a monster's inventory.
-  </attribute>
-  <attribute arch="resist_cold" editor="resist cold %" length="15" type="int">
-    Resistances on flesh items make them more durable against spellcraft
-    of the appropriate kind. It also allows dragon players to eventually gain
-    resistance by eating it. Usually resistance should only be set for flesh
-    items in a monster's inventory.
-  </attribute>
-  <attribute arch="resist_confusion" editor="resist confusion %" length="15" type="int">
-    Resistances on flesh items make them more durable against spellcraft
-    of the appropriate kind. It also allows dragon players to eventually gain
-    resistance by eating it. Usually resistance should only be set for flesh
-    items in a monster's inventory.
-  </attribute>
-  <attribute arch="resist_acid" editor="resist acid %" length="15" type="int">
-    Resistances on flesh items make them more durable against spellcraft
-    of the appropriate kind. It also allows dragon players to eventually gain
-    resistance by eating it. Usually resistance should only be set for flesh
-    items in a monster's inventory.
-  </attribute>
-  <attribute arch="resist_drain" editor="resist draining %" length="15" type="int">
-    Resistances on flesh items make them more durable against spellcraft
-    of the appropriate kind. It also allows dragon players to eventually gain
-    resistance by eating it. Usually resistance should only be set for flesh
-    items in a monster's inventory.
-  </attribute>
-  <attribute arch="resist_weaponmagic" editor="resist weaponmagic %" length="15" type="int">
-    Resistances on flesh items make them more durable against spellcraft
-    of the appropriate kind. It also allows dragon players to eventually gain
-    resistance by eating it. Usually resistance should only be set for flesh
-    items in a monster's inventory.
-  </attribute>
-  <attribute arch="resist_ghosthit" editor="resist ghosthit %" length="15" type="int">
-    Resistances on flesh items make them more durable against spellcraft
-    of the appropriate kind. It also allows dragon players to eventually gain
-    resistance by eating it. Usually resistance should only be set for flesh
-    items in a monster's inventory.
-  </attribute>
-  <attribute arch="resist_poison" editor="resist poison %" length="15" type="int">
-    Resistances on flesh items make them more durable against spellcraft
-    of the appropriate kind. It also allows dragon players to eventually gain
-    resistance by eating it. Usually resistance should only be set for flesh
-    items in a monster's inventory.
-  </attribute>
-  <attribute arch="resist_slow" editor="resist slow %" length="15" type="int">
-    Resistances on flesh items make them more durable against spellcraft
-    of the appropriate kind. It also allows dragon players to eventually gain
-    resistance by eating it. Usually resistance should only be set for flesh
-    items in a monster's inventory.
-  </attribute>
-  <attribute arch="resist_paralyze" editor="resist paralyze %" length="15" type="int">
-    Resistances on flesh items make them more durable against spellcraft
-    of the appropriate kind. It also allows dragon players to eventually gain
-    resistance by eating it. Usually resistance should only be set for flesh
-    items in a monster's inventory.
-  </attribute>
-  <attribute arch="resist_fear" editor="resist fear %" length="15" type="int">
-    Resistances on flesh items make them more durable against spellcraft
-    of the appropriate kind. It also allows dragon players to eventually gain
-    resistance by eating it. Usually resistance should only be set for flesh
-    items in a monster's inventory.
-  </attribute>
-  <attribute arch="resist_deplete" editor="resist depletion %" length="15" type="int">
-    Resistances on flesh items make them more durable against spellcraft
-    of the appropriate kind. It also allows dragon players to eventually gain
-    resistance by eating it. Usually resistance should only be set for flesh
-    items in a monster's inventory.
-  </attribute>
-  <attribute arch="resist_death" editor="resist death-attack %" length="15" type="int">
-    RResistances on flesh items make them more durable against spellcraft
-    of the appropriate kind. It also allows dragon players to eventually gain
-    resistance by eating it. Usually resistance should only be set for flesh
-    items in a monster's inventory.
-  </attribute>
-  <attribute arch="resist_chaos" editor="resist chaos %" length="15" type="int">
-    Resistances on flesh items make them more durable against spellcraft
-    of the appropriate kind. It also allows dragon players to eventually gain
-    resistance by eating it. Usually resistance should only be set for flesh
-    items in a monster's inventory.
-  </attribute>
-  <attribute arch="resist_blind" editor="resist blinding %" length="15" type="int">
-    Resistances on flesh items make them more durable against spellcraft
-    of the appropriate kind. It also allows dragon players to eventually gain
-    resistance by eating it. Usually resistance should only be set for flesh
-    items in a monster's inventory.
-  </attribute>
-</section>
+  &resistances_flesh_section;
   <attribute arch_begin="msg" arch_end="endmsg" editor="description" type="text">
     This text may describe the item.
   </attribute>
@@ -2445,32 +2418,7 @@
   </description>
   <attribute arch="is_dust" editor="is dust" type="bool">
   </attribute>
-<section name="resistance">
-  <attribute arch="resist_physical" editor="resist physical %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_magic" editor="resist magic %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_fire" editor="resist fire %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_electricity" editor="resist electricity %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_cold" editor="resist cold %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_acid" editor="resist acid %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_weaponmagic" editor="resist weaponmagic %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_ghosthit" editor="resist ghosthit %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_poison" editor="resist poison %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_death" editor="resist death-attack %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_chaos" editor="resist chaos %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_holyword" editor="resist holy power %" length="15" type="int">
-  </attribute>
-</section>
+  &resistances_basic;
 </type>
 
 <!--####################################################################-->
@@ -2774,50 +2722,7 @@
     to &lt;weapon class&gt;.
   </attribute>
 </section>
-<section name="resistance">
-  <attribute arch="resist_physical" editor="resist physical %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_magic" editor="resist magic %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_fire" editor="resist fire %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_electricity" editor="resist electricity %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_cold" editor="resist cold %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_confusion" editor="resist confusion %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_acid" editor="resist acid %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_drain" editor="resist draining %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_weaponmagic" editor="resist weaponmagic %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_ghosthit" editor="resist ghosthit %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_poison" editor="resist poison %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_slow" editor="resist slow %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_paralyze" editor="resist paralyze %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_fear" editor="resist fear %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_deplete" editor="resist depletion %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_turn_undead" editor="resist turn undead %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_death" editor="resist death-attack %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_chaos" editor="resist chaos %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_blind" editor="resist blinding %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_holyword" editor="resist holy power %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_godpower" editor="resist godpower %" length="15" type="int">
-  </attribute>
-</section>
+&resistances_basic;
 </type>
 
 <!--####################################################################-->
@@ -3032,7 +2937,7 @@
     the carried weight.
   </attribute>
   <attribute arch="precious" editor="precious" type="bool">
-    Set this flag to indicate that this monster is <i>precious</i>, i.e.
+    Set this flag to indicate that this monster is precious, i.e.
     it should not be lightly destroyed. This is most useful on pets and
     keeps the server from destroying them on destroy_pets/monster floors
     and will try to save them when the player logs out.
@@ -3263,51 +3168,7 @@
     attacker.
   </attribute>
 </section>
-
-<section name="resistance">
-  <attribute arch="resist_physical" editor="resist physical %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_magic" editor="resist magic %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_fire" editor="resist fire %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_electricity" editor="resist electricity %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_cold" editor="resist cold %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_confusion" editor="resist confusion %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_acid" editor="resist acid %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_drain" editor="resist draining %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_weaponmagic" editor="resist weaponmagic %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_ghosthit" editor="resist ghosthit %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_poison" editor="resist poison %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_slow" editor="resist slow %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_paralyze" editor="resist paralyze %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_fear" editor="resist fear %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_deplete" editor="resist depletion %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_turn_undead" editor="resist turn undead %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_death" editor="resist death-attack %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_chaos" editor="resist chaos %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_blind" editor="resist blinding %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_holyword" editor="resist holy power %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_godpower" editor="resist godpower %" length="15" type="int">
-  </attribute>
-</section>
+  &resistances_basic;
   <attribute arch_begin="msg" arch_end="endmsg" editor="npc message" type="text">
   </attribute>
 </type>
@@ -3322,9 +3183,9 @@
     <attribute arch="value" />
     <attribute arch="unpaid" />
   </ignore>
-  <description><![CDATA[
+  <description>
     A grimreaper is a monster that vanishes after it did some number of
-    draining attacks. ]]> <!-- XXX: is this ok? -->
+    draining attacks.
   </description>
 <section name="grimreaper">
   <attribute arch="value" editor="attacks" type="int">
@@ -3607,124 +3468,7 @@
     A godgiven item vanishes as soon as the player
     drops it to the ground.
   </attribute>
-<section name="stats">
-  <attribute arch="Str" editor="strength" type="int">
-    The player's strentgh will rise/fall by the given value for permanent
-    (of course there is an upper limit). Generally there shouldn't be stat
-    potions granting more than one stat. Cursed potions will subtract the
-    stats if positive.
-  </attribute>
-  <attribute arch="Dex" editor="dexterity" type="int">
-    The player's dexterity will rise/fall by the given value for permanent
-    (of course there is an upper limit). Generally there shouldn't be stat
-    potions granting more than one stat. Cursed potions will subtract the
-    stats if positive.
-  </attribute>
-  <attribute arch="Con" editor="constitution" type="int">
-    The player's constitution will rise/fall by the given value for permanent
-    (of course there is an upper limit). Generally there shouldn't be stat
-    potions granting more than one stat. Cursed potions will subtract the
-    stats if positive.
-  </attribute>
-  <attribute arch="Int" editor="intelligence" type="int">
-    The player's intelligence will rise/fall by the given value for permanent
-    (of course there is an upper limit). Generally there shouldn't be stat
-    potions granting more than one stat. Cursed potions will subtract the
-    stats if positive.
-  </attribute>
-  <attribute arch="Pow" editor="power" type="int">
-    The player's power will rise/fall by the given value for permanent
-    (of course there is an upper limit). Generally there shouldn't be stat
-    potions granting more than one stat. Cursed potions will subtract the
-    stats if positive.
-  </attribute>
-  <attribute arch="Wis" editor="wisdom" type="int">
-    The player's wisdom will rise/fall by the given value for permanent
-    (of course there is an upper limit). Generally there shouldn't be stat
-    potions granting more than one stat. Cursed potions will subtract the
-    stats if positive.
-  </attribute>
-  <attribute arch="Cha" editor="charisma" type="int">
-    The player's charisma will rise/fall by the given value for permanent
-    (of course there is an upper limit). Generally there shouldn't be stat
-    potions granting more than one stat. Cursed potions will subtract the
-    stats if positive.
-  </attribute>
-</section>
-<section name="resistance">
-  <attribute arch="resist_physical" editor="resist physical %" length="15" type="int">
-    The player's resistance to physical will rise by this value in percent
-    (range -100 till +100). The effect is only temporare, and it does NOT
-    add on the values from the player's equipment.
-    Cursed potions will make negative resistance.. very nasty in combat!
-  </attribute>
-  <attribute arch="resist_magic" editor="resist magic %" length="15" type="int">
-    The player's resistance to magic will rise by this value in percent
-    (range -100 till +100). The effect is only temporare, and it does NOT
-    add on the values from the player's equipment.
-    Cursed potions will make negative resistance.. very nasty in combat!
-  </attribute>
-  <attribute arch="resist_fire" editor="resist fire %" length="15" type="int">
-    The player's resistance to fire will rise by this value in percent
-    (range -100 till +100). The effect is only temporare, and it does NOT
-    add on the values from the player's equipment.
-    Cursed potions will make negative resistance.. very nasty in combat!
-  </attribute>
-  <attribute arch="resist_electricity" editor="resist electricity %" length="15" type="int">
-    The player's resistance to electricity will rise by this value in percent
-    (range -100 till +100). The effect is only temporare, and it does NOT
-    add on the values from the player's equipment.
-    Cursed potions will make negative resistance.. very nasty in combat!
-  </attribute>
-  <attribute arch="resist_cold" editor="resist cold %" length="15" type="int">
-    The player's resistance to cold will rise by this value in percent
-    (range -100 till +100). The effect is only temporare, and it does NOT
-    add on the values from the player's equipment.
-    Cursed potions will make negative resistance.. very nasty in combat!
-  </attribute>
-  <attribute arch="resist_acid" editor="resist acid %" length="15" type="int">
-    The player's resistance to acid will rise by this value in percent
-    (range -100 till +100). The effect is only temporare, and it does NOT
-    add on the values from the player's equipment.
-    Cursed potions will make negative resistance.. very nasty in combat!
-  </attribute>
-  <attribute arch="resist_confusion" editor="resist confusion %" length="15" type="int">
-    The player's resistance to confusion will rise by this value in percent
-    (range -100 till +100). The effect is only temporare, and it does NOT
-    add on the values from the player's equipment.
-    Cursed potions will make negative resistance.. very nasty in combat!
-  </attribute>
-  <attribute arch="resist_weaponmagic" editor="resist weaponmagic %" length="15" type="int">
-    The player's resistance to weaponmagic will rise by this value in percent
-    (range -100 till +100). The effect is only temporare, and it does NOT
-    add on the values from the player's equipment.
-    Cursed potions will make negative resistance.. very nasty in combat!
-  </attribute>
-  <attribute arch="resist_paralyze" editor="resist paralyze %" length="15" type="int">
-    The player's resistance to paralyze will rise by this value in percent
-    (range -100 till +100). The effect is only temporare, and it does NOT
-    add on the values from the player's equipment.
-    Cursed potions will make negative resistance.. very nasty in combat!
-  </attribute>
-  <attribute arch="resist_drain" editor="resist draining %" length="15" type="int">
-    The player's resistance to draining will rise by this value in percent
-    (range -100 till +100). The effect is only temporare, and it does NOT
-    add on the values from the player's equipment.
-    Cursed potions will make negative resistance.. very nasty in combat!
-  </attribute>
-  <attribute arch="resist_deplete" editor="resist depletion %" length="15" type="int">
-    The player's resistance to depletion will rise by this value in percent
-    (range -100 till +100). The effect is only temporare, and it does NOT
-    add on the values from the player's equipment.
-    Cursed potions will make negative resistance.. very nasty in combat!
-  </attribute>
-  <attribute arch="resist_poison" editor="resist poison %" length="15" type="int">
-    The player's resistance to poison will rise by this value in percent
-    (range -100 till +100). The effect is only temporare, and it does NOT
-    add on the values from the player's equipment.
-    Cursed potions will make negative resistance.. very nasty in combat!
-  </attribute>
-</section>
+  &player_stat_resist_sections;
 </type>
 
 <!--####################################################################-->
@@ -4775,11 +4519,11 @@
     Traps hit any monster or person who steps on them for 'dam' damage in
     'attacktype' attacktype and/or trigger a reaction.
     <br><br>
-    Many traps are already defined in the archetypes. ]]>
+    Many traps are already defined in the archetypes.]]>
   </description>
   <use><![CDATA[
     Avoid monsters stepping on your traps. For example, a party of orcs setting
-off your lightning wall and pit trap is usually a bad idea. ]]>
+    off your lightning wall and pit trap is usually a bad idea.]]>
   </use>
   <attribute arch="no_pick" value="1" type="fixed" />
   &move_on;
@@ -5086,50 +4830,7 @@ off your lightning wall and pit trap is usually a bad idea. ]]>
     Weak walls of high &lt;armour class&gt; are less likely to get hit.
     &lt;armour class&gt; can be considered the "counterpiece" to &lt;weapon class&gt;.
   </attribute>
-<section name="resistance">
-  <attribute arch="resist_physical" editor="resist physical %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_magic" editor="resist magic %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_fire" editor="resist fire %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_electricity" editor="resist electricity %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_cold" editor="resist cold %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_confusion" editor="resist confusion %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_acid" editor="resist acid %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_drain" editor="resist draining %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_weaponmagic" editor="resist weaponmagic %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_ghosthit" editor="resist ghosthit %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_poison" editor="resist poison %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_slow" editor="resist slow %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_paralyze" editor="resist paralyze %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_fear" editor="resist fear %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_deplete" editor="resist depletion %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_turn_undead" editor="resist turn undead %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_death" editor="resist death-attack %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_chaos" editor="resist chaos %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_blind" editor="resist blinding %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_holyword" editor="resist holy power %" length="15" type="int">
-  </attribute>
-  <attribute arch="resist_godpower" editor="resist godpower %" length="15" type="int">
-  </attribute>
-</section>
+  &resistances_basic;
 </type>
 
 <!--####################################################################-->
@@ -5237,138 +4938,7 @@ off your lightning wall and pit trap is usually a bad idea. ]]>
     A godgiven item vanishes as soon as the player
     drops it to the ground.
   </attribute>
-<section name="resistance">
-  <attribute arch="resist_physical" editor="resist physical %" length="15" type="int">
-    This adds physical resistance to the weapon (= armour value). The number is
-    a percent-value in the range 0-100. Treat this with CARE. Look at other maps
-    and what they require to do for getting this-and-that artifact.
-  </attribute>
-  <attribute arch="resist_magic" editor="resist magic %" length="15" type="int">
-    This adds magic resistance to the weapon. The number is a percent-value in
-    the range 0-100. Treat this with CARE. Look at other maps and what they
-    require to do for getting this-and-that artifact.
-  </attribute>
-  <attribute arch="resist_fire" editor="resist fire %" length="15" type="int">
-    This adds fire resistance to the weapon. The number is a percent-value in
-    the range 0-100. Treat this with CARE. Look at other maps and what they
-    require to do for getting this-and-that artifact.
-  </attribute>
-  <attribute arch="resist_electricity" editor="resist electricity %" length="15" type="int">
-    This adds electricity resistance to the weapon. The number is a percent-value in
-    the range 0-100. Treat this with CARE. Look at other maps and what they
-    require to do for getting this-and-that artifact.
-  </attribute>
-  <attribute arch="resist_cold" editor="resist cold %" length="15" type="int">
-    This adds fire resistance to the weapon. The number is a percent-value in
-    the range 0-100. Treat this with CARE. Look at other maps and what they
-    require to do for getting this-and-that artifact.
-  </attribute>
-  <attribute arch="resist_confusion" editor="resist confusion %" length="15" type="int">
-    This adds confusion resistance to the weapon. The number is a percent-value in
-    the range 0-100. Confusion resistance is not very effective
-    unless the value comes close to 100 (= perfect immunity).
-  </attribute>
-  <attribute arch="resist_acid" editor="resist acid %" length="15" type="int">
-    This adds acid resistance to the weapon. The number is a percent-value in
-    the range 0-100. Treat this with CARE. Look at other maps and what they
-    require to do for getting this-and-that artifact.
-  </attribute>
-  <attribute arch="resist_drain" editor="resist draining %" length="15" type="int">
-    This adds draining resistance to the weapon. The number is a percent-value
-    in the range 0-100. Draining resistance is little effective
-    unless the value is 100 (= perfect immunity).
-  </attribute>
-  <attribute arch="resist_weaponmagic" editor="resist weaponmagic %" length="15" type="int">
-    This adds weaponmagic resistance to the weapon. The number is a percent-value in
-    the range 0-100. Weaponmagic resistance generally should not exist on
-    equipment at all. Spells/Monsters doing weaponmagic damage (e.g. comet spell)
-    are not meant to be easily resisted.
-  </attribute>
-  <attribute arch="resist_ghosthit" editor="resist ghosthit %" length="15" type="int">
-    This adds ghosthit resistance to the weapon. The number is a percent-value
-    in the range 0-100. Treat this with CARE. Look at other maps and what they
-    require to do for getting this-and-that artifact.
-  </attribute>
-  <attribute arch="resist_poison" editor="resist poison %" length="15" type="int">
-    This adds poison resistance to the weapon. The number is a percent-value in
-    the range 0-100. Treat this with CARE. Look at other maps and what they
-    require to do for getting this-and-that artifact.
-  </attribute>
-  <attribute arch="resist_slow" editor="resist slow %" length="15" type="int">
-    This adds fear resistance to the weapon. The number is a percent-value in
-    the range 0-100. Resistance to fear is pretty useless.
-  </attribute>
-  <attribute arch="resist_paralyze" editor="resist paralyze %" length="15" type="int">
-    This adds paralyze resistance to the weapon. The number is a percent-value in
-    the range 0-100. Paralyze resistance is little effective
-    unless the value is 100 (= perfect immunity).
-  </attribute>
-  <attribute arch="resist_fear" editor="resist fear %" length="15" type="int">
-    This adds fear resistance to the weapon. The number is a percent-value in
-    the range 0-100. Resistance to fear is pretty useless.
-  </attribute>
-  <attribute arch="resist_deplete" editor="resist depletion %" length="15" type="int">
-    This adds depletion resistance to the weapon. The number is a percent-value
-    in the range 0-100. Depletion resistance is little effective
-    unless the value is 100 (= perfect immunity).
-  </attribute>
-  <attribute arch="resist_death" editor="resist death-attack %" length="15" type="int">
-    This adds death-attack resistance to the weapon. The number is a
-    percent-value in the range 0-100. Death-attack resistance is little
-    effective unless the value is 100 (= perfect immunity).
-    Generally, resistance to death-attack is not supposed to be
-    available to players!
-  </attribute>
-  <attribute arch="resist_chaos" editor="resist chaos %" length="15" type="int">
-    This adds chaos resistance to the weapon. The number is a percent-value in
-    the range 0-100. Treat this with CARE. Look at other maps and what they
-    require to do for getting this-and-that artifact.
-    Note that chaos is not a stand-alone attacktype. Chaos "contains" a
-    combination of other attacktypes.
-  </attribute>
-  <attribute arch="resist_blind" editor="resist blinding %" length="15" type="int">
-    This adds blinding resistance to the weapon. The number is a percent-value
-    in the range 0-100. Treat this with CARE. Look at other maps and what they
-    require to do for getting this-and-that artifact.
-  </attribute>
-  <attribute arch="resist_holyword" editor="resist holy power %" length="15" type="int">
-    This adds holy power resistance to the weapon. The number is a percent-value
-    in the range 0-100. Holy power is the attacktype that holyword-type spells
-    use to hurt undead creatures. This kind of resistance is only reasonable
-    for undead players (wraith or devourer cult).
-    Generally, resistance to holy word should not be available for players.
-  </attribute>
-</section>
-<section name="stats">
-  <attribute arch="Str" editor="strength" type="int">
-    The player's strentgh will rise/fall by the given value
-    while wearing this weapon.
-  </attribute>
-  <attribute arch="Dex" editor="dexterity" type="int">
-    The player's dexterity will rise/fall by the given value
-    while wearing this weapon.
-  </attribute>
-  <attribute arch="Con" editor="constitution" type="int">
-    The player's constitution will rise/fall by the given value
-    while wearing this weapon.
-  </attribute>
-  <attribute arch="Int" editor="intelligence" type="int">
-    The player's intelligence will rise/fall by the given value
-    while wearing this weapon.
-  </attribute>
-  <attribute arch="Pow" editor="power" type="int">
-    The player's power will rise/fall by the given value
-    while wearing this weapon.
-  </attribute>
-  <attribute arch="Wis" editor="wisdom" type="int">
-    The player's wisdom will rise/fall by the given value while
-    wearing this weapon.
-  </attribute>
-  <attribute arch="Cha" editor="charisma" type="int">
-    The player's charisma will rise/fall by the given value
-    while wearing this weapon.
-  </attribute>
-</section>
+  &player_stat_resist_sections;
 <section name="misc">
   <attribute arch="luck" editor="luck bonus" type="int">
     With positive luck bonus, the player is more likely to

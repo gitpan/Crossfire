@@ -9,7 +9,7 @@ my $mm = MM->new({
     },
     PREREQ_PM   => {
        AnyEvent => 0,
-       JSON::XS => 1.1,
+       JSON::XS => 1.44,
     },
     NAME         => "Crossfire",
     VERSION_FROM => "Crossfire.pm",

@@ -414,6 +414,22 @@ our %DEFAULT_ATTR = (
 	name => 'unpaid',
 	type => 'bool'
       }
+    ],
+    [
+      'sound',
+      {
+	desc => 'The sound this objects makes on a map. Enter either a sound alias from arch/res/sound.conf.res or a path. If you enter <path> in this field it will point to sound/<path>.ext',
+	name => 'sound',
+	type => 'string'
+      }
+    ],
+    [
+      'sound_destroy',
+      {
+	desc => 'The sound this objects makes when it is destroyed. Enter either a sound alias from arch/res/sound.conf.res or a path. If you enter <path> in this field it will point to sound/<path>.ext',
+	name => 'destroy sound',
+	type => 'string'
+      }
     ]
   ]
 );
@@ -714,169 +730,12 @@ our %TYPE = (
     name => 'Amulet',
     section => [
       [
-	'resistance',
-	[
-	  [
-	    'resist_physical',
-	    {
-	      desc => 'This adds physical resistance to the item (= armour value). The number is a percent-value in the range 0-100. Treat this with CARE. Look at other maps and what they require to do for getting this-and-that artifact.',
-	      name => 'resist physical %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_magic',
-	    {
-	      desc => 'This adds magic resistance to the item. The number is a percent-value in the range 0-100. Treat this with CARE. Look at other maps and what they require to do for getting this-and-that artifact.',
-	      name => 'resist magic %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_fire',
-	    {
-	      desc => 'This adds fire resistance to the item. The number is a percent-value in the range 0-100. Treat this with CARE. Look at other maps and what they require to do for getting this-and-that artifact.',
-	      name => 'resist fire %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_electricity',
-	    {
-	      desc => 'This adds electricity resistance to the item. The number is a percent-value in the range 0-100. Treat this with CARE. Look at other maps and what they require to do for getting this-and-that artifact.',
-	      name => 'resist electricity %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_cold',
-	    {
-	      desc => 'This adds fire resistance to the item. The number is a percent-value in the range 0-100. Treat this with CARE. Look at other maps and what they require to do for getting this-and-that artifact.',
-	      name => 'resist cold %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_confusion',
-	    {
-	      desc => 'This adds confusion resistance to the item. The number is a percent-value in the range 0-100. Confusion resistance is not very effective unless the value comes close to 100 (= perfect immunity).',
-	      name => 'resist confusion %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_acid',
-	    {
-	      desc => 'This adds acid resistance to the item. The number is a percent-value in the range 0-100. Treat this with CARE. Look at other maps and what they require to do for getting this-and-that artifact.',
-	      name => 'resist acid %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_drain',
-	    {
-	      desc => 'This adds draining resistance to the item. The number is a percent-value in the range 0-100. Draining resistance is little effective unless the value is 100 (= perfect immunity).',
-	      name => 'resist draining %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_weaponmagic',
-	    {
-	      desc => 'This adds weaponmagic resistance to the item. The number is a percent-value in the range 0-100. Weaponmagic resistance generally should not exist on equipment at all. Spells/Monsters doing weaponmagic damage (e.g. comet spell) are not meant to be easily resisted.',
-	      name => 'resist weaponmagic %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_ghosthit',
-	    {
-	      desc => 'This adds ghosthit resistance to the item. The number is a percent-value in the range 0-100. Treat this with CARE. Look at other maps and what they require to do for getting this-and-that artifact.',
-	      name => 'resist ghosthit %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_poison',
-	    {
-	      desc => 'This adds poison resistance to the item. The number is a percent-value in the range 0-100. Treat this with CARE. Look at other maps and what they require to do for getting this-and-that artifact.',
-	      name => 'resist poison %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_slow',
-	    {
-	      desc => 'This adds fear resistance to the item. The number is a percent-value in the range 0-100. Resistance to fear is pretty useless.',
-	      name => 'resist slow %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_paralyze',
-	    {
-	      desc => 'This adds paralyze resistance to the item. The number is a percent-value in the range 0-100. Paralyze resistance is little effective unless the value is 100 (= perfect immunity).',
-	      name => 'resist paralyze %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_fear',
-	    {
-	      desc => 'This adds fear resistance to the item. The number is a percent-value in the range 0-100. Resistance to fear is pretty useless.',
-	      name => 'resist fear %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_deplete',
-	    {
-	      desc => 'This adds depletion resistance to the item. The number is a percent-value in the range 0-100. Depletion resistance is little effective unless the value is 100 (= perfect immunity).',
-	      name => 'resist depletion %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_death',
-	    {
-	      desc => 'This adds death-attack resistance to the item. The number is a percent-value in the range 0-100. Death-attack resistance is little effective unless the value is 100 (= perfect immunity). Generally, resistance to death-attack is not supposed to be available to players!',
-	      name => 'resist death-attack %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_chaos',
-	    {
-	      desc => 'This adds chaos resistance to the item. The number is a percent-value in the range 0-100. Treat this with CARE. Look at other maps and what they require to do for getting this-and-that artifact. Note that chaos is not a stand-alone attacktype. Chaos "contains" a combination of other attacktypes.',
-	      name => 'resist chaos %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_blind',
-	    {
-	      desc => 'This adds blinding resistance to the item. The number is a percent-value in the range 0-100. Treat this with CARE. Look at other maps and what they require to do for getting this-and-that artifact.',
-	      name => 'resist blinding %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_holyword',
-	    {
-	      desc => 'This adds holy power resistance to the item. The number is a percent-value in the range 0-100. Holy power is the attacktype that holyword-type spells use to hurt undead creatures. This kind of resistance is only reasonable for undead players (wraith or devourer cult). Generally, resistance to holy word should not be available for players.',
-	      name => 'resist holy power %',
-	      type => 'int'
-	    }
-	  ]
-	]
-      ],
-      [
 	'stats',
 	[
 	  [
 	    'Str',
 	    {
-	      desc => 'The player\'s strentgh will rise/fall by the given value while wearing this piece of equipment.',
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
 	      name => 'strength',
 	      type => 'int'
 	    }
@@ -884,7 +743,7 @@ our %TYPE = (
 	  [
 	    'Dex',
 	    {
-	      desc => 'The player\'s dexterity will rise/fall by the given value while wearing this piece of equipment.',
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
 	      name => 'dexterity',
 	      type => 'int'
 	    }
@@ -892,7 +751,7 @@ our %TYPE = (
 	  [
 	    'Con',
 	    {
-	      desc => 'The player\'s constitution will rise/fall by the given value while wearing this piece of equipment.',
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
 	      name => 'constitution',
 	      type => 'int'
 	    }
@@ -900,7 +759,7 @@ our %TYPE = (
 	  [
 	    'Int',
 	    {
-	      desc => 'The player\'s intelligence will rise/fall by the given value while wearing this piece of equipment.',
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
 	      name => 'intelligence',
 	      type => 'int'
 	    }
@@ -908,7 +767,7 @@ our %TYPE = (
 	  [
 	    'Pow',
 	    {
-	      desc => 'The player\'s power will rise/fall by the given value while wearing this piece of equipment.',
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
 	      name => 'power',
 	      type => 'int'
 	    }
@@ -916,7 +775,7 @@ our %TYPE = (
 	  [
 	    'Wis',
 	    {
-	      desc => 'The player\'s wisdom will rise/fall by the given value while wearing this piece of equipment.',
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
 	      name => 'wisdom',
 	      type => 'int'
 	    }
@@ -924,8 +783,173 @@ our %TYPE = (
 	  [
 	    'Cha',
 	    {
-	      desc => 'The player\'s charisma will rise/fall by the given value while wearing this piece of equipment.',
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
 	      name => 'charisma',
+	      type => 'int'
+	    }
+	  ]
+	]
+      ],
+      [
+	'resistance',
+	[
+	  [
+	    'resist_physical',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist physical %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_magic',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist magic %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_fire',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist fire %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_electricity',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist electricity %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_cold',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist cold %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_acid',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist acid %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_confusion',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist confusion %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_weaponmagic',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist weaponmagic %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_ghosthit',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist ghosthit %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_slow',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist slow %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_fear',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist fear %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_death',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist death-attack %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_chaos',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist chaos %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_blind',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist blinding %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_holyword',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist holy power %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_godpower',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist godpower %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_paralyze',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist paralyze %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_drain',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist draining %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_deplete',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist depletion %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_poison',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist poison %',
 	      type => 'int'
 	    }
 	  ]
@@ -1154,7 +1178,7 @@ our %TYPE = (
     ],
     desc => 'Wearing boots, the object\'s stats will directly be inherited to the player. Usually enhancing his speed, or granting some minor protection bonus.',
     import => [
-      $TYPE{Amulet}
+      'Amulet'
     ],
     name => 'Boots',
     use => 'Feel free to create your own special artifacts. However, it is very important that you keep your artifact in balance with existing maps.'
@@ -1172,7 +1196,7 @@ our %TYPE = (
     ],
     desc => 'Bracers are armour-plates worn around the wrists. Wearing bracer, the object\'s stats will directly be inherited to the player. Usually enhancing his defense.',
     import => [
-      $TYPE{Amulet}
+      'Amulet'
     ],
     name => 'Bracers',
     use => 'Feel free to create your own special artifacts. However, it is very important that you keep your artifact in balance with existing maps.'
@@ -1206,7 +1230,7 @@ our %TYPE = (
     ],
     desc => 'Wearing an armour, the object\'s stats will directly be inherited to the player. Usually enhancing his defense.',
     import => [
-      $TYPE{Amulet}
+      'Amulet'
     ],
     name => 'Brestplate Armour',
     use => 'Feel free to create your own special artifacts. However, it is very important that you keep your artifact in balance with existing maps.'
@@ -1274,7 +1298,7 @@ our %TYPE = (
       $IGNORE_LIST{non_pickable}
     ],
     import => [
-      $TYPE{Button}
+      'Button'
     ],
     name => 'Button Trigger'
   },
@@ -1371,7 +1395,7 @@ our %TYPE = (
     ],
     desc => 'Wearing a cloak, the object\'s stats will directly be inherited to the player. Cloaks usually add minor &lt;armour class&gt; and sometimes a bit of resistance.',
     import => [
-      $TYPE{Amulet}
+      'Amulet'
     ],
     name => 'Cloak',
     use => 'Feel free to create your own special artifacts. However, it is very important that you keep your artifact in balance with existing maps.'
@@ -2187,10 +2211,10 @@ our %TYPE = (
 	}
       ],
       [
-	'unique',
+	'damned',
 	{
-	  desc => 'This flag defines the destined map as "personal unique map". If set, there will be a seperate version of that map for every player out there. This feature is used for the permanent apartments (in Scorn/Nuernberg/Caterham...). It should not be used for anything else than apartments, since Crossfire is a *multi*player game. In such a permanent apartment don\'t forget to set the unique-flag for all floor tiles too (see floors). An exit pointing outside of a personal unique map must have the "unique destination"-flag unset.',
-	  name => 'unique destination',
+	  desc => 'If set, then players using this exit will have their savebed position set to the destination of the exit when passing through.',
+	  name => 'set savebed',
 	  type => 'bool'
 	}
       ]
@@ -2367,7 +2391,7 @@ our %TYPE = (
 	  [
 	    'resist_death',
 	    {
-	      desc => 'RResistances on flesh items make them more durable against spellcraft of the appropriate kind. It also allows dragon players to eventually gain resistance by eating it. Usually resistance should only be set for flesh items in a monster\'s inventory.',
+	      desc => 'Resistances on flesh items make them more durable against spellcraft of the appropriate kind. It also allows dragon players to eventually gain resistance by eating it. Usually resistance should only be set for flesh items in a monster\'s inventory.',
 	      name => 'resist death-attack %',
 	      type => 'int'
 	    }
@@ -2738,7 +2762,7 @@ our %TYPE = (
     ],
     desc => 'Wearing a girdle, the object\'s stats will directly be inherited to the player. Girdles usually provide stats- or damage bonuses and no defense.',
     import => [
-      $TYPE{Amulet}
+      'Amulet'
     ],
     name => 'Girdle',
     use => 'Feel free to create your own special artifacts. However, it is very important that you keep your artifact in balance with existing maps.'
@@ -2756,7 +2780,7 @@ our %TYPE = (
     ],
     desc => 'Wearing gloves, the object\'s stats will directly be inherited to the player. Gloves can add defense or damage bonuses.',
     import => [
-      $TYPE{Amulet}
+      'Amulet'
     ],
     name => 'Gloves',
     use => 'Feel free to create your own special artifacts. However, it is very important that you keep your artifact in balance with existing maps.'
@@ -2801,7 +2825,7 @@ our %TYPE = (
       $IGNORE_LIST{non_pickable}
     ],
     import => [
-      $TYPE{Handle}
+      'Handle'
     ],
     name => 'Handle Trigger',
     use => 'When you connect an ordinary handle to a gate, the gate normally remains opened after the first player passed. If you want to keep the gate shut, connecting it to a handle trigger is an easy solution.'
@@ -2970,7 +2994,7 @@ our %TYPE = (
     ],
     desc => 'Wearing a helmet, the object\'s stats will directly be inherited to the player. Normal helmets usually increase defense, while crowns add more special bonuses like stats/resistances paired with low defense.',
     import => [
-      $TYPE{Amulet}
+      'Amulet'
     ],
     name => 'Helmet',
     use => 'Feel free to create your own special artifacts. However, it is very important that you keep your artifact in balance with existing maps.'
@@ -3118,9 +3142,23 @@ our %TYPE = (
 	    }
 	  ],
 	  [
+	    'resist_confusion',
+	    {
+	      name => 'resist confusion %',
+	      type => 'int'
+	    }
+	  ],
+	  [
 	    'resist_acid',
 	    {
 	      name => 'resist acid %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_drain',
+	    {
+	      name => 'resist draining %',
 	      type => 'int'
 	    }
 	  ],
@@ -3146,6 +3184,34 @@ our %TYPE = (
 	    }
 	  ],
 	  [
+	    'resist_slow',
+	    {
+	      name => 'resist slow %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_paralyze',
+	    {
+	      name => 'resist paralyze %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_fear',
+	    {
+	      name => 'resist fear %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_deplete',
+	    {
+	      name => 'resist depletion %',
+	      type => 'int'
+	    }
+	  ],
+	  [
 	    'resist_death',
 	    {
 	      name => 'resist death-attack %',
@@ -3160,9 +3226,23 @@ our %TYPE = (
 	    }
 	  ],
 	  [
+	    'resist_blind',
+	    {
+	      name => 'resist blinding %',
+	      type => 'int'
+	    }
+	  ],
+	  [
 	    'resist_holyword',
 	    {
 	      name => 'resist holy power %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_godpower',
+	    {
+	      name => 'resist godpower %',
 	      type => 'int'
 	    }
 	  ]
@@ -3686,13 +3766,6 @@ our %TYPE = (
 	    }
 	  ],
 	  [
-	    'resist_turn_undead',
-	    {
-	      name => 'resist turn undead %',
-	      type => 'int'
-	    }
-	  ],
-	  [
 	    'resist_death',
 	    {
 	      name => 'resist death-attack %',
@@ -4016,7 +4089,7 @@ our %TYPE = (
       [
 	'precious',
 	{
-	  desc => 'Set this flag to indicate that this monster is XML::Grove::Element=HASH(0xa213c0), i.e. it should not be lightly destroyed. This is most useful on pets and keeps the server from destroying them on destroy_pets/monster floors and will try to save them when the player logs out.',
+	  desc => 'Set this flag to indicate that this monster is precious, i.e. it should not be lightly destroyed. This is most useful on pets and keeps the server from destroying them on destroy_pets/monster floors and will try to save them when the player logs out.',
 	  name => 'precious',
 	  type => 'bool'
 	}
@@ -4497,13 +4570,6 @@ our %TYPE = (
 	    }
 	  ],
 	  [
-	    'resist_turn_undead',
-	    {
-	      name => 'resist turn undead %',
-	      type => 'int'
-	    }
-	  ],
-	  [
 	    'resist_death',
 	    {
 	      name => 'resist death-attack %',
@@ -4553,7 +4619,7 @@ our %TYPE = (
       'unpaid'
     ],
     import => [
-      $TYPE{'Monster & NPC'}
+      'Monster & NPC'
     ],
     name => 'Monster (Grimreaper)',
     section => [
@@ -4891,7 +4957,7 @@ our %TYPE = (
 	  [
 	    'Dex',
 	    {
-	      desc => 'The player\'s dexterity will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
 	      name => 'dexterity',
 	      type => 'int'
 	    }
@@ -4899,7 +4965,7 @@ our %TYPE = (
 	  [
 	    'Con',
 	    {
-	      desc => 'The player\'s constitution will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
 	      name => 'constitution',
 	      type => 'int'
 	    }
@@ -4907,7 +4973,7 @@ our %TYPE = (
 	  [
 	    'Int',
 	    {
-	      desc => 'The player\'s intelligence will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
 	      name => 'intelligence',
 	      type => 'int'
 	    }
@@ -4915,7 +4981,7 @@ our %TYPE = (
 	  [
 	    'Pow',
 	    {
-	      desc => 'The player\'s power will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
 	      name => 'power',
 	      type => 'int'
 	    }
@@ -4923,7 +4989,7 @@ our %TYPE = (
 	  [
 	    'Wis',
 	    {
-	      desc => 'The player\'s wisdom will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
 	      name => 'wisdom',
 	      type => 'int'
 	    }
@@ -4931,7 +4997,7 @@ our %TYPE = (
 	  [
 	    'Cha',
 	    {
-	      desc => 'The player\'s charisma will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
 	      name => 'charisma',
 	      type => 'int'
 	    }
@@ -4952,7 +5018,7 @@ our %TYPE = (
 	  [
 	    'resist_magic',
 	    {
-	      desc => 'The player\'s resistance to magic will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
 	      name => 'resist magic %',
 	      type => 'int'
 	    }
@@ -4960,7 +5026,7 @@ our %TYPE = (
 	  [
 	    'resist_fire',
 	    {
-	      desc => 'The player\'s resistance to fire will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
 	      name => 'resist fire %',
 	      type => 'int'
 	    }
@@ -4968,7 +5034,7 @@ our %TYPE = (
 	  [
 	    'resist_electricity',
 	    {
-	      desc => 'The player\'s resistance to electricity will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
 	      name => 'resist electricity %',
 	      type => 'int'
 	    }
@@ -4976,7 +5042,7 @@ our %TYPE = (
 	  [
 	    'resist_cold',
 	    {
-	      desc => 'The player\'s resistance to cold will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
 	      name => 'resist cold %',
 	      type => 'int'
 	    }
@@ -4984,7 +5050,7 @@ our %TYPE = (
 	  [
 	    'resist_acid',
 	    {
-	      desc => 'The player\'s resistance to acid will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
 	      name => 'resist acid %',
 	      type => 'int'
 	    }
@@ -4992,7 +5058,7 @@ our %TYPE = (
 	  [
 	    'resist_confusion',
 	    {
-	      desc => 'The player\'s resistance to confusion will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
 	      name => 'resist confusion %',
 	      type => 'int'
 	    }
@@ -5000,15 +5066,79 @@ our %TYPE = (
 	  [
 	    'resist_weaponmagic',
 	    {
-	      desc => 'The player\'s resistance to weaponmagic will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
 	      name => 'resist weaponmagic %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_ghosthit',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist ghosthit %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_slow',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist slow %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_fear',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist fear %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_death',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist death-attack %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_chaos',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist chaos %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_blind',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist blinding %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_holyword',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist holy power %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_godpower',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist godpower %',
 	      type => 'int'
 	    }
 	  ],
 	  [
 	    'resist_paralyze',
 	    {
-	      desc => 'The player\'s resistance to paralyze will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
 	      name => 'resist paralyze %',
 	      type => 'int'
 	    }
@@ -5016,7 +5146,7 @@ our %TYPE = (
 	  [
 	    'resist_drain',
 	    {
-	      desc => 'The player\'s resistance to draining will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
 	      name => 'resist draining %',
 	      type => 'int'
 	    }
@@ -5024,7 +5154,7 @@ our %TYPE = (
 	  [
 	    'resist_deplete',
 	    {
-	      desc => 'The player\'s resistance to depletion will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
 	      name => 'resist depletion %',
 	      type => 'int'
 	    }
@@ -5032,7 +5162,7 @@ our %TYPE = (
 	  [
 	    'resist_poison',
 	    {
-	      desc => 'The player\'s resistance to poison will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
 	      name => 'resist poison %',
 	      type => 'int'
 	    }
@@ -5164,7 +5294,7 @@ our %TYPE = (
   Ring => {
     desc => 'Rings are worn on the hands - one ring each. Wearing rings, the object\'s stats will directly be inherited to the player. Usually enhancing his spellcasting potential.',
     import => [
-      $TYPE{Amulet}
+      'Amulet'
     ],
     name => 'Ring',
     use => 'When you create an artifact ring, never forget that players can wear <B>two</B> rings! Due to that it is extremely important to keep rings in balance with the game. <br><br> Also keep in mind that rings are generally the wizard\'s tools. They should primarily grant bonuses to spellcasting abilities and non-physical resistances.'
@@ -5460,7 +5590,7 @@ our %TYPE = (
     ],
     desc => 'Wearing a shield, the object\'s stats will directly be inherited to the player. Shields usually provide good defense, only surpassed by brestplate armour. Resistances on shields aren\'t uncommon either.',
     import => [
-      $TYPE{Amulet}
+      'Amulet'
     ],
     name => 'Shield',
     use => 'Feel free to create your own special artifacts. However, it is very important that you keep your artifact in balance with existing maps.'
@@ -5902,6 +6032,249 @@ our %TYPE = (
     desc => 'By reading a skill scroll, a player has a chance to learn the contained skill.',
     name => 'Skill Scroll',
     use => 'Skill scrolls are very much sought for by players. Currently, all skill scrolls are sold in shops randomly, which is in fact not a good system. It would be nice to have some cool quests with skill scrolls rewarded at the end.'
+  },
+  'Skill Tool' => {
+    attr => [
+      [
+	'skill',
+	{
+	  desc => 'This field describes which skill the player will be able to use wearing this item.',
+	  name => 'skill name',
+	  type => 'string'
+	}
+      ]
+    ],
+    desc => 'Wearing a skill tool will give the player the ability to use a skill.',
+    name => 'Skill Tool',
+    section => [
+      [
+	'stats',
+	[
+	  [
+	    'Str',
+	    {
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
+	      name => 'strength',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'Dex',
+	    {
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
+	      name => 'dexterity',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'Con',
+	    {
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
+	      name => 'constitution',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'Int',
+	    {
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
+	      name => 'intelligence',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'Pow',
+	    {
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
+	      name => 'power',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'Wis',
+	    {
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
+	      name => 'wisdom',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'Cha',
+	    {
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
+	      name => 'charisma',
+	      type => 'int'
+	    }
+	  ]
+	]
+      ],
+      [
+	'resistance',
+	[
+	  [
+	    'resist_physical',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist physical %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_magic',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist magic %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_fire',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist fire %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_electricity',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist electricity %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_cold',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist cold %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_acid',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist acid %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_confusion',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist confusion %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_weaponmagic',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist weaponmagic %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_ghosthit',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist ghosthit %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_slow',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist slow %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_fear',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist fear %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_death',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist death-attack %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_chaos',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist chaos %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_blind',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist blinding %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_holyword',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist holy power %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_godpower',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist godpower %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_paralyze',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist paralyze %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_drain',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist draining %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_deplete',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist depletion %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_poison',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist poison %',
+	      type => 'int'
+	    }
+	  ]
+	]
+      ]
+    ],
+    use => 'Feel free to assign resistancies and stats to a skill tools or change the skill that is given.'
   },
   'Special Key' => {
     attr => [
@@ -6923,13 +7296,6 @@ our %TYPE = (
 	    }
 	  ],
 	  [
-	    'resist_turn_undead',
-	    {
-	      name => 'resist turn undead %',
-	      type => 'int'
-	    }
-	  ],
-	  [
 	    'resist_death',
 	    {
 	      name => 'resist death-attack %',
@@ -7099,169 +7465,12 @@ our %TYPE = (
     name => 'Weapon',
     section => [
       [
-	'resistance',
-	[
-	  [
-	    'resist_physical',
-	    {
-	      desc => 'This adds physical resistance to the weapon (= armour value). The number is a percent-value in the range 0-100. Treat this with CARE. Look at other maps and what they require to do for getting this-and-that artifact.',
-	      name => 'resist physical %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_magic',
-	    {
-	      desc => 'This adds magic resistance to the weapon. The number is a percent-value in the range 0-100. Treat this with CARE. Look at other maps and what they require to do for getting this-and-that artifact.',
-	      name => 'resist magic %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_fire',
-	    {
-	      desc => 'This adds fire resistance to the weapon. The number is a percent-value in the range 0-100. Treat this with CARE. Look at other maps and what they require to do for getting this-and-that artifact.',
-	      name => 'resist fire %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_electricity',
-	    {
-	      desc => 'This adds electricity resistance to the weapon. The number is a percent-value in the range 0-100. Treat this with CARE. Look at other maps and what they require to do for getting this-and-that artifact.',
-	      name => 'resist electricity %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_cold',
-	    {
-	      desc => 'This adds fire resistance to the weapon. The number is a percent-value in the range 0-100. Treat this with CARE. Look at other maps and what they require to do for getting this-and-that artifact.',
-	      name => 'resist cold %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_confusion',
-	    {
-	      desc => 'This adds confusion resistance to the weapon. The number is a percent-value in the range 0-100. Confusion resistance is not very effective unless the value comes close to 100 (= perfect immunity).',
-	      name => 'resist confusion %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_acid',
-	    {
-	      desc => 'This adds acid resistance to the weapon. The number is a percent-value in the range 0-100. Treat this with CARE. Look at other maps and what they require to do for getting this-and-that artifact.',
-	      name => 'resist acid %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_drain',
-	    {
-	      desc => 'This adds draining resistance to the weapon. The number is a percent-value in the range 0-100. Draining resistance is little effective unless the value is 100 (= perfect immunity).',
-	      name => 'resist draining %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_weaponmagic',
-	    {
-	      desc => 'This adds weaponmagic resistance to the weapon. The number is a percent-value in the range 0-100. Weaponmagic resistance generally should not exist on equipment at all. Spells/Monsters doing weaponmagic damage (e.g. comet spell) are not meant to be easily resisted.',
-	      name => 'resist weaponmagic %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_ghosthit',
-	    {
-	      desc => 'This adds ghosthit resistance to the weapon. The number is a percent-value in the range 0-100. Treat this with CARE. Look at other maps and what they require to do for getting this-and-that artifact.',
-	      name => 'resist ghosthit %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_poison',
-	    {
-	      desc => 'This adds poison resistance to the weapon. The number is a percent-value in the range 0-100. Treat this with CARE. Look at other maps and what they require to do for getting this-and-that artifact.',
-	      name => 'resist poison %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_slow',
-	    {
-	      desc => 'This adds fear resistance to the weapon. The number is a percent-value in the range 0-100. Resistance to fear is pretty useless.',
-	      name => 'resist slow %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_paralyze',
-	    {
-	      desc => 'This adds paralyze resistance to the weapon. The number is a percent-value in the range 0-100. Paralyze resistance is little effective unless the value is 100 (= perfect immunity).',
-	      name => 'resist paralyze %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_fear',
-	    {
-	      desc => 'This adds fear resistance to the weapon. The number is a percent-value in the range 0-100. Resistance to fear is pretty useless.',
-	      name => 'resist fear %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_deplete',
-	    {
-	      desc => 'This adds depletion resistance to the weapon. The number is a percent-value in the range 0-100. Depletion resistance is little effective unless the value is 100 (= perfect immunity).',
-	      name => 'resist depletion %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_death',
-	    {
-	      desc => 'This adds death-attack resistance to the weapon. The number is a percent-value in the range 0-100. Death-attack resistance is little effective unless the value is 100 (= perfect immunity). Generally, resistance to death-attack is not supposed to be available to players!',
-	      name => 'resist death-attack %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_chaos',
-	    {
-	      desc => 'This adds chaos resistance to the weapon. The number is a percent-value in the range 0-100. Treat this with CARE. Look at other maps and what they require to do for getting this-and-that artifact. Note that chaos is not a stand-alone attacktype. Chaos "contains" a combination of other attacktypes.',
-	      name => 'resist chaos %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_blind',
-	    {
-	      desc => 'This adds blinding resistance to the weapon. The number is a percent-value in the range 0-100. Treat this with CARE. Look at other maps and what they require to do for getting this-and-that artifact.',
-	      name => 'resist blinding %',
-	      type => 'int'
-	    }
-	  ],
-	  [
-	    'resist_holyword',
-	    {
-	      desc => 'This adds holy power resistance to the weapon. The number is a percent-value in the range 0-100. Holy power is the attacktype that holyword-type spells use to hurt undead creatures. This kind of resistance is only reasonable for undead players (wraith or devourer cult). Generally, resistance to holy word should not be available for players.',
-	      name => 'resist holy power %',
-	      type => 'int'
-	    }
-	  ]
-	]
-      ],
-      [
 	'stats',
 	[
 	  [
 	    'Str',
 	    {
-	      desc => 'The player\'s strentgh will rise/fall by the given value while wearing this weapon.',
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
 	      name => 'strength',
 	      type => 'int'
 	    }
@@ -7269,7 +7478,7 @@ our %TYPE = (
 	  [
 	    'Dex',
 	    {
-	      desc => 'The player\'s dexterity will rise/fall by the given value while wearing this weapon.',
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
 	      name => 'dexterity',
 	      type => 'int'
 	    }
@@ -7277,7 +7486,7 @@ our %TYPE = (
 	  [
 	    'Con',
 	    {
-	      desc => 'The player\'s constitution will rise/fall by the given value while wearing this weapon.',
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
 	      name => 'constitution',
 	      type => 'int'
 	    }
@@ -7285,7 +7494,7 @@ our %TYPE = (
 	  [
 	    'Int',
 	    {
-	      desc => 'The player\'s intelligence will rise/fall by the given value while wearing this weapon.',
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
 	      name => 'intelligence',
 	      type => 'int'
 	    }
@@ -7293,7 +7502,7 @@ our %TYPE = (
 	  [
 	    'Pow',
 	    {
-	      desc => 'The player\'s power will rise/fall by the given value while wearing this weapon.',
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
 	      name => 'power',
 	      type => 'int'
 	    }
@@ -7301,7 +7510,7 @@ our %TYPE = (
 	  [
 	    'Wis',
 	    {
-	      desc => 'The player\'s wisdom will rise/fall by the given value while wearing this weapon.',
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
 	      name => 'wisdom',
 	      type => 'int'
 	    }
@@ -7309,8 +7518,173 @@ our %TYPE = (
 	  [
 	    'Cha',
 	    {
-	      desc => 'The player\'s charisma will rise/fall by the given value while wearing this weapon.',
+	      desc => 'The player\'s strentgh will rise/fall by the given value for permanent (of course there is an upper limit). Generally there shouldn\'t be stat potions granting more than one stat. Cursed potions will subtract the stats if positive.',
 	      name => 'charisma',
+	      type => 'int'
+	    }
+	  ]
+	]
+      ],
+      [
+	'resistance',
+	[
+	  [
+	    'resist_physical',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist physical %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_magic',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist magic %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_fire',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist fire %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_electricity',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist electricity %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_cold',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist cold %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_acid',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist acid %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_confusion',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist confusion %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_weaponmagic',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist weaponmagic %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_ghosthit',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist ghosthit %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_slow',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist slow %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_fear',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist fear %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_death',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist death-attack %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_chaos',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist chaos %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_blind',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist blinding %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_holyword',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist holy power %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_godpower',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist godpower %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_paralyze',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist paralyze %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_drain',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist draining %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_deplete',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist depletion %',
+	      type => 'int'
+	    }
+	  ],
+	  [
+	    'resist_poison',
+	    {
+	      desc => 'The player\'s resistance to physical will rise by this value in percent (range -100 till +100). The effect is only temporare, and it does NOT add on the values from the player\'s equipment. Cursed potions will make negative resistance.. very nasty in combat!',
+	      name => 'resist poison %',
 	      type => 'int'
 	    }
 	  ]
@@ -7475,6 +7849,7 @@ our %ATTR = (
   70 => $TYPE{Ring},
   72 => $TYPE{Flesh},
   73 => $TYPE{Inorganic},
+  74 => $TYPE{'Skill Tool'},
   83 => $TYPE{Duplicator},
   85 => $TYPE{Spellbook},
   87 => $TYPE{Cloak},

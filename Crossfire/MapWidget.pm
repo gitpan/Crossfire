@@ -33,6 +33,12 @@ use Glib::Object::Subclass
          param_types => ["Glib::Int", "Glib::Int", "Glib::Scalar"],
          class_closure => \&set,
       },
+      swap_stack_change => {
+         flags       => [qw/run-last/],
+         return_type => undef,
+         param_types => ["Glib::Int", "Glib::Int", "Glib::Scalar"],
+         #class_closure => \&set,
+      },
    };
 
 use List::Util qw(min max);
@@ -252,7 +258,7 @@ sub fill_tooltip {
          $TILE->composite ($pb,
             0, 0,
             TILESIZE, TILESIZE,
-            - ($_->{_face} % 64) * TILESIZE, - TILESIZE * int $_->{_face} / 64,
+            - ($_->{_face} % CACHESTRIDE) * TILESIZE, - TILESIZE * int $_->{_face} / CACHESTRIDE,
             1, 1, 'nearest', 255
          );
 
@@ -279,7 +285,7 @@ sub fill_tooltip {
             }
             $text .= "</small>";
          } else {
-            $text .= "\n<unknown archetype>";
+            $text .= Glib::Markup::escape_text ("\n<unknown archetype>");
          }
 
          $hbox->pack_start (my $label = new Gtk2::Label, 1, 1, 0);
@@ -401,7 +407,7 @@ sub expose {
                $TILE->composite ($pb,
                   $dx, $dy,
                   TILESIZE, TILESIZE,
-                  $dx - ($a->{_face} % 64) * TILESIZE, $dy - TILESIZE * int $a->{_face} / 64,
+                  $dx - ($a->{_face} % CACHESTRIDE) * TILESIZE, $dy - TILESIZE * int $a->{_face} / CACHESTRIDE,
                   1, 1, 'nearest', 255
                );
             }
@@ -419,13 +425,46 @@ sub expose {
       for values %{ $self->{overlay} || {} };
 }
 
+# get head from _virtual tile, returning x, y, z and @$stack
+sub get_head {
+   my ($self, $virtual) = @_;
+
+   my ($x, $y) = @$virtual{qw(_virtual_x _virtual_y)}
+      or return;
+
+   my $stack = $self->{map}{map}[$x][$y]
+      or return;
+
+   my ($z) = grep $stack->[$_] == $virtual->{_virtual}, 0..$#$stack
+      or return;
+
+   ($x, $y, $z, $self->get ($x, $y))
+}
+
 sub get {
    my ($self, $x, $y) = @_;
 
    return unless $x >= 0 && $x < $self->{map}{width}
               && $y >= 0 && $y < $self->{map}{height};
 
-   Storable::dclone $self->{map}{map}[$x][$y] || []
+   Storable::dclone [
+      map +{ %$_, ((exists $_->{_virtual}) ? (_virtual => 0+$_->{_virtual}) : ()) },
+          @{ $self->{map}{map}[$x][$y] || [] }
+   ]
+}
+
+# the caller promises us that he won't, in no circumstances,
+# change the stack he gets.
+sub get_ro {
+   my ($self, $x, $y) = @_;
+
+   return unless $x >= 0 && $x < $self->{map}{width}
+              && $y >= 0 && $y < $self->{map}{height};
+
+   [
+      map +{ %$_, ((exists $_->{_virtual}) ? (_virtual => 0+$_->{_virtual}) : ()) },
+          @{ $self->{map}{map}[$x][$y] || [] }
+   ]
 }
 
 sub set {
@@ -572,6 +611,7 @@ sub change_swap {
    for (@{ $change->{set} }) {
       my $stack = $self->get ($_->[0], $_->[1]);
       $self->set ($_->[0], $_->[1], $_->[2]);
+      $self->signal_emit (swap_stack_change => $_->[0], $_->[1], $_->[2]);
       $_->[2] = $stack;
    }
 

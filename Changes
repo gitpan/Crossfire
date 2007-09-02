@@ -1,3 +1,13 @@
+1.0  Sun Sep  2 10:45:36 CEST 2007
+	- better support for new facedata structure.
+        - support use Crossfire::MoveType for thawing.
+        - use customised json encoder/decoder.
+        - actually allow multiple simul. transfers
+          in ix (as allowed by the protocol),
+          sending as version 2 of fxsxix.
+        - updated/fixed msg protocol (version 2).
+        - fix import of attribute types.
+
 0.99 Mon May 28 23:32:53 CEST 2007
 	- elmex claims to have something done but of course didn't give a shit
           about documenting it even with a single line.
