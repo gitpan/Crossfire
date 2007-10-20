@@ -654,6 +654,11 @@
   <attribute arch="face" editor="image" type="string">
     The image-name defines what image is displayed for this object in-game.
   </attribute>
+  <attribute arch="tag" editor="tag" type="string">
+    You can tag objects with an identifier. Tagged objects can be found quickly
+    from their tag, which makes them useful to tag exits and refer to those by
+    their name.
+  </attribute>
   <attribute arch="nrof" editor="number" type="int">
     This value determines the number of objects in one stack (for example:
     100 goldcoins =&gt; "number = 100"). You should set this at least to one, for
@@ -1187,6 +1192,7 @@
     areas where really no kind of spell should be invoked by a player.
   ]]>
   </use>
+  &movement_types_terrain;
   <attribute arch="no_pick" value="1" type="fixed" />
 </type>
 
@@ -3747,7 +3753,7 @@
     <UL>
     <LI> Monsters must not be able to reach the savebeds under any circumstances!
     <LI> If there are NPCs around, make sure they have the friendly-flag set.
-    <LI> Insert a relyable exit! Make sure there is no possibility that
+    <LI> Insert a reliable exit! Make sure there is no possibility that
          players get trapped in a savebed location.
     <LI> If possible, mark the whole site as no-spell area (Insert this
          arch called "dungeon_magic" everywhere). This is not required,

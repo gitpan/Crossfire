@@ -335,6 +335,14 @@ our %DEFAULT_ATTR = (
       }
     ],
     [
+      'tag',
+      {
+	desc => 'You can tag objects with an identifier. Tagged objects can be found quickly from their tag, which makes them useful to tag exits and refer to those by their name.',
+	name => 'tag',
+	type => 'string'
+      }
+    ],
+    [
       'nrof',
       {
 	desc => 'This value determines the number of objects in one stack (for example: 100 goldcoins => "number = 100"). You should set this at least to one, for any pickable object - otherwise it won\'t be mergeable into a stack.',
@@ -5498,6 +5506,38 @@ our %TYPE = (
   'Safe ground (CF+)' => {
     attr => [
       [
+	'move_block',
+	{
+	  desc => 'Objects using these movement types cannot move over this space.',
+	  name => 'blocked movement',
+	  type => 'movement_type'
+	}
+      ],
+      [
+	'move_allow',
+	{
+	  desc => 'Objects using these movement types are allowed to move over this space. Takes precedence over \'blocked movements\'.',
+	  name => 'allowed movement',
+	  type => 'movement_type'
+	}
+      ],
+      [
+	'move_slow',
+	{
+	  desc => 'The types of movement that should by slowed down by the \'slow movement penalty\'.',
+	  name => 'slowed movement',
+	  type => 'movement_type'
+	}
+      ],
+      [
+	'move_slow_penalty',
+	{
+	  desc => 'If <slow movement> is set to a value greater zero, all creatures matching \'slow move\' will be slower than normal on this spot. <slow movement> 1 - rough terrain <slow movement> 2 - very rough terrain ... <slow movement> 5 - default for deep swamp ... <slow movement> 7 - spider web (sticky as hell)',
+	  name => 'slow movement penalty',
+	  type => 'int'
+	}
+      ],
+      [
 	'no_pick',
 	{
 	  type => 'fixed',
@@ -5541,7 +5581,7 @@ our %TYPE = (
       $IGNORE_LIST{non_pickable}
     ],
     name => 'Savebed',
-    use => 'Put savebed locations in towns, do not put them into dungeons. It is absolutely neccessary that a place with savebeds is 100% secure. That means: <UL> <LI> Monsters must not be able to reach the savebeds under any circumstances! <LI> If there are NPCs around, make sure they have the friendly-flag set. <LI> Insert a relyable exit! Make sure there is no possibility that players get trapped in a savebed location. <LI> If possible, mark the whole site as no-spell area (Insert this arch called "dungeon_magic" everywhere). This is not required, but it makes the place much more safe. </UL>'
+    use => 'Put savebed locations in towns, do not put them into dungeons. It is absolutely neccessary that a place with savebeds is 100% secure. That means: <UL> <LI> Monsters must not be able to reach the savebeds under any circumstances! <LI> If there are NPCs around, make sure they have the friendly-flag set. <LI> Insert a reliable exit! Make sure there is no possibility that players get trapped in a savebed location. <LI> If possible, mark the whole site as no-spell area (Insert this arch called "dungeon_magic" everywhere). This is not required, but it makes the place much more safe. </UL>'
   },
   Scroll => {
     attr => [

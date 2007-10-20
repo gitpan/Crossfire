@@ -6,7 +6,7 @@ Crossfire - Crossfire maphandling
 
 package Crossfire;
 
-our $VERSION = '1.0';
+our $VERSION = '1.1';
 
 use strict;
 
@@ -948,75 +948,39 @@ sub use_tilecache {
 sub load_tilecache() {
    require Gtk2;
 
-   if (-e "$LIB/facedata") { # Crossfire TRT faces
-      cache_file "$LIB/facedata", "$VARDIR/tilecache.pst", \&use_tilecache,
-         sub {
-            my %cache;
-            my $facedata = Storable::retrieve "$LIB/facedata";
+   cache_file "$LIB/facedata", "$VARDIR/tilecache.pst", \&use_tilecache,
+      sub {
+         my %cache;
+         my $facedata = Storable::retrieve "$LIB/facedata";
 
-            $facedata->{version} == 2
-               or die "$LIB/facedata: version mismatch, cannot proceed.";
+         $facedata->{version} == 2
+            or die "$LIB/facedata: version mismatch, cannot proceed.";
 
-            my $faces = $facedata->{faceinfo};
-            my $idx = 0;
+         my $faces = $facedata->{faceinfo};
+         my $idx = 0;
 
-            for (sort keys %$faces) {
-               my ($face, $info) = ($_, $faces->{$_});
+         for (sort keys %$faces) {
+            my ($face, $info) = ($_, $faces->{$_});
 
-               my $pb = new Gtk2::Gdk::PixbufLoader;
-               $pb->write ($info->{data32});
-               $pb->close;
-               my $pb = $pb->get_pixbuf;
+            my $pb = new Gtk2::Gdk::PixbufLoader;
+            $pb->write ($info->{data32});
+            $pb->close;
+            my $pb = $pb->get_pixbuf;
 
-               my $tile = $cache{$face} = {
-                  pb  => $pb,
-                  idx => $idx,
-                  w   => int $pb->get_width  / TILESIZE,
-                  h   => int $pb->get_height / TILESIZE,
-               };
+            my $tile = $cache{$face} = {
+               pb  => $pb,
+               idx => $idx,
+               w   => int $pb->get_width  / TILESIZE,
+               h   => int $pb->get_height / TILESIZE,
+            };
 
-               $idx += $tile->{w} * $tile->{h};
-            }
+            $idx += $tile->{w} * $tile->{h};
+         }
 
-            construct_tilecache_pb $idx, \%cache;
+         construct_tilecache_pb $idx, \%cache;
 
-            \%cache
-         };
-
-      *FACEDATA = Storable::retrieve "$LIB/facedata";
-
-   } elsif (-e "$LIB/crossfire.0") { # Crossfire1 version
-      cache_file "$LIB/crossfire.0", "$VARDIR/tilecache.pst", \&use_tilecache,
-         sub {
-            my $tile = read_pak "$LIB/crossfire.0";
-
-            my %cache;
-
-            my $idx = 0;
-
-            for my $name (sort keys %$tile) {
-               my $pb = new Gtk2::Gdk::PixbufLoader;
-               $pb->write ($tile->{$name});
-               $pb->close;
-               my $pb = $pb->get_pixbuf;
-
-               my $tile = $cache{$name} = {
-                  pb  => $pb,
-                  idx => $idx,
-                  w   => int $pb->get_width  / TILESIZE,
-                  h   => int $pb->get_height / TILESIZE,
-               };
-
-               $idx += $tile->{w} * $tile->{h};
-            }
-
-            construct_tilecache_pb $idx, \%cache;
-
-            \%cache
-         };
-
-      *FACEDATA = { };
-   }
+         \%cache
+      };
 }
 
 =head1 AUTHOR
