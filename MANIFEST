@@ -13,6 +13,7 @@ Crossfire/Protocol.pm
 bin/cfarch-normalize
 bin/cfmap-normalize
 bin/cfmap-plushify
+bin/cfmap-tagify
 res2pm
 res/README
 res/autojoin.txt

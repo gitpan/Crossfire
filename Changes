@@ -1,3 +1,6 @@
+1.11 Thu Nov  8 02:21:06 CET 2007
+	- add cfmap-tagify, which was missing.
+
 1.1  Sat Oct 20 23:49:15 CEST 2007
 	- started to remove crossfire compatibility cruft.
 

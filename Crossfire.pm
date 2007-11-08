@@ -6,7 +6,7 @@ Crossfire - Crossfire maphandling
 
 package Crossfire;
 
-our $VERSION = '1.1';
+our $VERSION = '1.11';
 
 use strict;
 
