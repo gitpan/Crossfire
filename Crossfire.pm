@@ -6,7 +6,7 @@ Crossfire - Crossfire maphandling
 
 package Crossfire;
 
-our $VERSION = '1.12';
+our $VERSION = '1.13';
 
 use strict;
 
@@ -24,7 +24,7 @@ our @EXPORT = qw(
    editor_archs arch_extents
 );
 
-use JSON::XS qw(from_json to_json);
+use JSON::XS qw(decode_json encode_json);
 
 our $LIB = $ENV{CROSSFIRE_LIBDIR};
 
@@ -477,7 +477,7 @@ sub normalize_arch($) {
 sub attr_thaw($) {
    my ($ob) = @_;
 
-   $ob->{attach} = from_json $ob->{attach}
+   $ob->{attach} = decode_json $ob->{attach}
       if exists $ob->{attach};
 
    $ob
@@ -486,7 +486,7 @@ sub attr_thaw($) {
 sub attr_freeze($) {
    my ($ob) = @_;
 
-   $ob->{attach} = Crossfire::to_json $ob->{attach}
+   $ob->{attach} = Crossfire::encode_json $ob->{attach}
       if exists $ob->{attach};
 
    $ob

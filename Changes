@@ -1,3 +1,6 @@
+1.13 Wed Dec  5 12:38:58 CET 2007
+	- really switch to JSON::XS 2.01.
+
 1.12 Wed Dec  5 12:01:05 CET 2007
 	- switch to JSON::XS 2.01.
 
