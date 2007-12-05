@@ -1,3 +1,6 @@
+1.12 Wed Dec  5 12:01:05 CET 2007
+	- switch to JSON::XS 2.01.
+
 1.11 Thu Nov  8 02:21:06 CET 2007
 	- add cfmap-tagify, which was missing.
 
